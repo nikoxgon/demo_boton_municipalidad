@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "721144910754",
+    "firebase_url": "https://fir-btn-panico.firebaseio.com",
+    "project_id": "fir-btn-panico",
+    "storage_bucket": "fir-btn-panico.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:721144910754:android:9567991b9e66b002fe18fb",
+        "android_client_info": {
+          "package_name": "com.example.demo_boton"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "721144910754-ukfmslaaiptalmaa0tblb3vi9t1v6iff.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.demo_boton",
+            "certificate_hash": "ecd9e899f5707449206069a1330254e1246bfcff"
+          }
+        },
+        {
+          "client_id": "721144910754-6mbkqjut9n8ceiib641mulaatph3mhc9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA36IZVrhAJO2IwN3KwWtU0YnLeP2X4yaU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "721144910754-6mbkqjut9n8ceiib641mulaatph3mhc9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
