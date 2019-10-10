@@ -106,6 +106,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
         // appBar: new AppBar(
         //   title: new Text('Flutter login'),
         // ),
+        backgroundColor: Color.fromRGBO(54, 58, 129, 1),
         body: Stack(
           children: <Widget>[
             _showBody(),
@@ -198,7 +199,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
           child: CircleAvatar(
             backgroundColor: Colors.transparent,
             child: FlutterLogo(
-              size: 50.0,
+              size: 100.0,
             ),
             radius: 50.0,
           )),
@@ -215,7 +216,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
         decoration: new InputDecoration(
             hintText: 'Correo',
             hintStyle: TextStyle(
-              color: Colors.grey
+              color: Colors.white
             ),
             icon: new Icon(
               Icons.mail,
@@ -236,7 +237,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
         decoration: new InputDecoration(
             hintText: 'Contraseña',
             hintStyle: TextStyle(
-              color: Colors.grey
+              color: Colors.white
             ),
             icon: new Icon(
               Icons.lock,
@@ -250,11 +251,11 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
   Widget _showSecondaryButton() {
     return new FlatButton(
       child: _formMode == FormMode.LOGIN
-          ? new Text('Create an account',
-              style: new TextStyle(fontSize: 18.0, fontWeight: FontWeight.w300))
-          : new Text('Have an account? Sign in',
+          ? new Text('Crear una cuenta',
+              style: new TextStyle(fontSize: 18.0, fontWeight: FontWeight.w400))
+          : new Text('¿Tienes una cuenta? Inicia sesion',
               style:
-                  new TextStyle(fontSize: 18.0, fontWeight: FontWeight.w300)),
+                  new TextStyle(fontSize: 18.0, fontWeight: FontWeight.w400)),
       onPressed: _formMode == FormMode.LOGIN
           ? _changeFormToSignUp
           : _changeFormToLogin,
@@ -263,18 +264,16 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
 
   Widget _showPrimaryButton() {
     return new Padding(
-        padding: EdgeInsets.fromLTRB(0.0, 45.0, 0.0, 0.0),
+        padding: EdgeInsets.fromLTRB(0.0, 30.0, 0.0, 0.0),
         child: SizedBox(
-          height: 40.0,
+          height: 50.0,
           child: new RaisedButton(
             elevation: 5.0,
-            shape: new RoundedRectangleBorder(
-                borderRadius: new BorderRadius.circular(30.0)),
-            color: Colors.blue,
+            color: Color.fromRGBO(246, 175, 50, 1),
             child: _formMode == FormMode.LOGIN
-                ? new Text('Login',
+                ? new Text('Iniciar Sesion',
                     style: new TextStyle(fontSize: 20.0, color: Colors.white))
-                : new Text('Create account',
+                : new Text('Crear Cuenta',
                     style: new TextStyle(fontSize: 20.0, color: Colors.white)),
             onPressed: _validateAndSubmit,
           ),

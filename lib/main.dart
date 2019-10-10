@@ -46,8 +46,8 @@ class TabBarDemo extends StatelessWidget {
 
 _ThemeApp() {
   return new ThemeData(
-      primaryColor: Colors.red,
-      accentColor: Colors.redAccent,
+      primaryColor: Color.fromRGBO(54, 58, 129, 1),
+      accentColor: Color.fromRGBO(246, 175, 50, 1),
       hintColor: Colors.white70);
 }
 
