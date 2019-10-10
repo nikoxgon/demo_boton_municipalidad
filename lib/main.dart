@@ -12,6 +12,7 @@ class TabBarDemo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      themeMode: _ThemeApp(),
       initialRoute: '/login',
       routes: {'/login': (context) => SignInPage()},
       home: DefaultTabController(
@@ -43,15 +44,20 @@ class TabBarDemo extends StatelessWidget {
   }
 }
 
+_ThemeApp() {
+  return new ThemeData(
+      primaryColor: Colors.red,
+      accentColor: Colors.redAccent,
+      hintColor: Colors.white70);
+}
+
 class Demo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-        title: 'Flutter login demo',
+        // title: 'Flutter login',
         debugShowCheckedModeBanner: false,
-        theme: new ThemeData(
-          primarySwatch: Colors.blue,
-        ),
+        theme: _ThemeApp(),
         home: new RootPage(auth: new Auth()));
   }
 }

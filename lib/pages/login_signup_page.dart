@@ -1,5 +1,6 @@
 import 'package:demo_boton/services/authentication.dart';
 import 'package:flutter/material.dart';
+import 'package:avatar_glow/avatar_glow.dart';
 
 class LoginSignUpPage extends StatefulWidget {
   LoginSignUpPage({this.auth, this.onSignedIn});
@@ -57,10 +58,11 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
           _isLoading = false;
         });
 
-        if (userId.length > 0 && userId != null && _formMode == FormMode.LOGIN) {
+        if (userId.length > 0 &&
+            userId != null &&
+            _formMode == FormMode.LOGIN) {
           widget.onSignedIn();
         }
-
       } catch (e) {
         print('Error: $e');
         setState(() {
@@ -73,7 +75,6 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
       }
     }
   }
-
 
   @override
   void initState() {
@@ -102,9 +103,9 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
   Widget build(BuildContext context) {
     _isIos = Theme.of(context).platform == TargetPlatform.iOS;
     return new Scaffold(
-        appBar: new AppBar(
-          title: new Text('Flutter login'),
-        ),
+        // appBar: new AppBar(
+        //   title: new Text('Flutter login'),
+        // ),
         body: Stack(
           children: <Widget>[
             _showBody(),
@@ -113,11 +114,14 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
         ));
   }
 
-  Widget _showCircularProgress(){
+  Widget _showCircularProgress() {
     if (_isLoading) {
       return Center(child: CircularProgressIndicator());
-    } return Container(height: 0.0, width: 0.0,);
-
+    }
+    return Container(
+      height: 0.0,
+      width: 0.0,
+    );
   }
 
   void _showVerifyEmailSentDialog() {
@@ -127,7 +131,8 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
         // return object of type Dialog
         return AlertDialog(
           title: new Text("Verify your account"),
-          content: new Text("Link to verify account has been sent to your email"),
+          content:
+              new Text("Link to verify account has been sent to your email"),
           actions: <Widget>[
             new FlatButton(
               child: new Text("Dismiss"),
@@ -142,7 +147,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
     );
   }
 
-  Widget _showBody(){
+  Widget _showBody() {
     return new Container(
         padding: EdgeInsets.all(16.0),
         child: new Form(
@@ -179,16 +184,24 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
   }
 
   Widget _showLogo() {
-    return new Hero(
-      tag: 'hero',
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(0.0, 70.0, 0.0, 0.0),
-        child: CircleAvatar(
-          backgroundColor: Colors.transparent,
-          radius: 48.0,
-          child: Image.asset('assets/flutter-icon.png'),
-        ),
-      ),
+    return new AvatarGlow(
+      startDelay: Duration(milliseconds: 1000),
+      glowColor: Colors.red.shade800,
+      endRadius: 100.0,
+      duration: Duration(milliseconds: 2000),
+      repeat: true,
+      showTwoGlows: true,
+      repeatPauseDuration: Duration(milliseconds: 100),
+      child: Material(
+          shape: CircleBorder(),
+          color: Colors.transparent,
+          child: CircleAvatar(
+            backgroundColor: Colors.transparent,
+            child: FlutterLogo(
+              size: 50.0,
+            ),
+            radius: 50.0,
+          )),
     );
   }
 
@@ -201,9 +214,11 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
         autofocus: false,
         decoration: new InputDecoration(
             hintText: 'Correo',
+            hintStyle: TextStyle(
+              color: Colors.grey
+            ),
             icon: new Icon(
               Icons.mail,
-              color: Colors.grey,
             )),
         validator: (value) => value.isEmpty ? 'Email can\'t be empty' : null,
         onSaved: (value) => _email = value.trim(),
@@ -220,9 +235,11 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
         autofocus: false,
         decoration: new InputDecoration(
             hintText: 'Contraseña',
+            hintStyle: TextStyle(
+              color: Colors.grey
+            ),
             icon: new Icon(
               Icons.lock,
-              color: Colors.grey,
             )),
         validator: (value) => value.isEmpty ? 'Password can\'t be empty' : null,
         onSaved: (value) => _password = value.trim(),
@@ -251,7 +268,8 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
           height: 40.0,
           child: new RaisedButton(
             elevation: 5.0,
-            shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0)),
+            shape: new RoundedRectangleBorder(
+                borderRadius: new BorderRadius.circular(30.0)),
             color: Colors.blue,
             child: _formMode == FormMode.LOGIN
                 ? new Text('Login',
