@@ -13,6 +13,7 @@
         android:name="io.flutter.app.FlutterApplication"
         android:label="demo_boton"
         android:icon="@mipmap/ic_launcher"
+        android:hardwareAccelerated="true"
         >
         <activity
             android:name=".MainActivity"
