@@ -29,6 +29,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.3.2"
+  beauty_textfield:
+    dependency: "direct main"
+    description:
+      name: beauty_textfield
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.1"
   boolean_selector:
     dependency: transitive
     description:

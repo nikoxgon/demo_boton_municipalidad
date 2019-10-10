@@ -1,6 +1,7 @@
 import 'package:demo_boton/services/authentication.dart';
 import 'package:flutter/material.dart';
 import 'package:avatar_glow/avatar_glow.dart';
+import 'package:beauty_textfield/beauty_textfield.dart';
 
 class LoginSignUpPage extends StatefulWidget {
   LoginSignUpPage({this.auth, this.onSignedIn});
@@ -208,21 +209,27 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
 
   Widget _showEmailInput() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(0.0, 100.0, 0.0, 0.0),
-      child: new TextFormField(
+      padding: const EdgeInsets.fromLTRB(0.0, 80.0, 0.0, 0.0),
+      child: new BeautyTextfield(
+        height: 50,
+        width: double.maxFinite,
         maxLines: 1,
-        keyboardType: TextInputType.emailAddress,
         autofocus: false,
-        decoration: new InputDecoration(
-            hintText: 'Correo',
-            hintStyle: TextStyle(
-              color: Colors.white
-            ),
-            icon: new Icon(
-              Icons.mail,
-            )),
-        validator: (value) => value.isEmpty ? 'Email can\'t be empty' : null,
-        onSaved: (value) => _email = value.trim(),
+        prefixIcon: new Icon(Icons.mail_outline),
+        placeholder: 'Correo',
+        inputType: TextInputType.emailAddress,
+        onSubmitted: (value) => _email = value.trim(),
+        // keyboardType: TextInputType.emailAddress,
+        // decoration: new InputDecoration(
+        //     hintText: 'Correo',
+        //     hintStyle: TextStyle(
+        //       color: Colors.white
+        //     ),
+        //     icon: new Icon(
+        //       Icons.mail,
+        //     )),
+        // validator: (value) => value.isEmpty ? 'Email can\'t be empty' : null,
+        // onSaved: (value) => _email = value.trim(),
       ),
     );
   }
@@ -230,20 +237,24 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
   Widget _showPasswordInput() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),
-      child: new TextFormField(
+      child: new BeautyTextfield(
         maxLines: 1,
         obscureText: true,
         autofocus: false,
-        decoration: new InputDecoration(
-            hintText: 'Contraseña',
-            hintStyle: TextStyle(
-              color: Colors.white
-            ),
-            icon: new Icon(
-              Icons.lock,
-            )),
-        validator: (value) => value.isEmpty ? 'Password can\'t be empty' : null,
-        onSaved: (value) => _password = value.trim(),
+        height: 50,
+        inputType: TextInputType.visiblePassword,
+        width: double.maxFinite,
+        prefixIcon: new Icon(Icons.lock_outline),
+        placeholder: 'Contraseña',
+        onSubmitted: (value) => _password = value.trim(),
+        // decoration: new InputDecoration(
+        //     hintText: 'Contraseña',
+        //     hintStyle: TextStyle(color: Colors.white),
+        //     icon: new Icon(
+        //       Icons.lock,
+        //     )),
+        // validator: (value) => value.isEmpty ? 'Password can\'t be empty' : null,
+        // onSaved: (value) => _password = value.trim(),
       ),
     );
   }
@@ -267,8 +278,10 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
         padding: EdgeInsets.fromLTRB(0.0, 30.0, 0.0, 0.0),
         child: SizedBox(
           height: 50.0,
-          child: new RaisedButton(
+          width: double.infinity,
+          child: new MaterialButton(
             elevation: 5.0,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
             color: Color.fromRGBO(246, 175, 50, 1),
             child: _formMode == FormMode.LOGIN
                 ? new Text('Iniciar Sesion',
