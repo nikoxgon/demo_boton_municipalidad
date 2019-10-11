@@ -47,6 +47,8 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
       String userId = "";
       try {
         if (_formMode == FormMode.LOGIN) {
+          print(_email);
+          print(_password);
           userId = await widget.auth.signIn(_email, _password);
           print('Signed in: $userId');
         } else {
@@ -132,12 +134,15 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
-          title: new Text("Verify your account"),
+          title: new Text("Verifica tu cuenta."),
+          backgroundColor: Color.fromRGBO(54, 58, 129, 1),
+          titleTextStyle: TextStyle(color: Colors.white),
           content:
-              new Text("Link to verify account has been sent to your email"),
+              new Text("Se ha enviado un link de confirmacion a su correo."),
           actions: <Widget>[
             new FlatButton(
-              child: new Text("Dismiss"),
+              child: new Text("Cerrar"),
+              color: Colors.white,
               onPressed: () {
                 _changeFormToLogin();
                 Navigator.of(context).pop();
@@ -169,7 +174,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
   }
 
   Widget _showErrorMessage() {
-    if (_errorMessage.length > 0 && _errorMessage != null) {
+    if ( _errorMessage != null && _errorMessage.length > 0 ) {
       return new Text(
         _errorMessage,
         style: TextStyle(
@@ -186,25 +191,12 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
   }
 
   Widget _showLogo() {
-    return new AvatarGlow(
-      startDelay: Duration(milliseconds: 1000),
-      glowColor: Colors.red.shade800,
-      endRadius: 100.0,
-      duration: Duration(milliseconds: 2000),
-      repeat: true,
-      showTwoGlows: true,
-      repeatPauseDuration: Duration(milliseconds: 100),
-      child: Material(
-          shape: CircleBorder(),
-          color: Colors.transparent,
-          child: CircleAvatar(
-            backgroundColor: Colors.transparent,
-            child: FlutterLogo(
-              size: 100.0,
-            ),
-            radius: 50.0,
-          )),
-    );
+    return new Padding(
+        padding: EdgeInsets.fromLTRB(0, 80, 0, 0),
+        child: Image(
+          image: AssetImage('assets/signup.png'),
+          height: 200,
+        ));
   }
 
   Widget _showEmailInput() {
@@ -218,7 +210,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
         prefixIcon: new Icon(Icons.mail_outline),
         placeholder: 'Correo',
         inputType: TextInputType.emailAddress,
-        onSubmitted: (value) => _email = value.trim(),
+        onChanged: (value) => _email = value.trim(),
         // keyboardType: TextInputType.emailAddress,
         // decoration: new InputDecoration(
         //     hintText: 'Correo',
@@ -236,7 +228,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
 
   Widget _showPasswordInput() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),
+      padding: const EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
       child: new BeautyTextfield(
         maxLines: 1,
         obscureText: true,
@@ -246,7 +238,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
         width: double.maxFinite,
         prefixIcon: new Icon(Icons.lock_outline),
         placeholder: 'Contraseña',
-        onSubmitted: (value) => _password = value.trim(),
+        onChanged: (value) => _password = value.trim(),
         // decoration: new InputDecoration(
         //     hintText: 'Contraseña',
         //     hintStyle: TextStyle(color: Colors.white),
@@ -263,10 +255,15 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
     return new FlatButton(
       child: _formMode == FormMode.LOGIN
           ? new Text('Crear una cuenta',
-              style: new TextStyle(fontSize: 18.0, fontWeight: FontWeight.w400))
+              style: new TextStyle(
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.w400,
+                  color: Colors.white))
           : new Text('¿Tienes una cuenta? Inicia sesion',
-              style:
-                  new TextStyle(fontSize: 18.0, fontWeight: FontWeight.w400)),
+              style: new TextStyle(
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.w400,
+                  color: Colors.white)),
       onPressed: _formMode == FormMode.LOGIN
           ? _changeFormToSignUp
           : _changeFormToLogin,
@@ -275,13 +272,13 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
 
   Widget _showPrimaryButton() {
     return new Padding(
-        padding: EdgeInsets.fromLTRB(0.0, 30.0, 0.0, 0.0),
+        padding: EdgeInsets.fromLTRB(0.0, 40.0, 0.0, 0.0),
         child: SizedBox(
           height: 50.0,
           width: double.infinity,
-          child: new MaterialButton(
-            elevation: 5.0,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
+          child: new FlatButton(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(10))),
             color: Color.fromRGBO(246, 175, 50, 1),
             child: _formMode == FormMode.LOGIN
                 ? new Text('Iniciar Sesion',

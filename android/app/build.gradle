@@ -25,10 +25,6 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
-// flutter_background_geolocation (must be placed after the lines above)
-Project background_geolocation = project(':flutter_background_geolocation')
-apply from: "${background_geolocation.projectDir}/background_geolocation.gradle"
-
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
 
@@ -56,8 +52,6 @@ android {
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig signingConfigs.debug
             minifyEnabled true
-            // background_geolocation requires custom Proguard Rules with minifyEnabled
-            proguardFiles "${background_geolocation.projectDir}/proguard-rules.pro"
         }
     }
 }

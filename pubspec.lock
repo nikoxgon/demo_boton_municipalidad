@@ -22,13 +22,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
-  background_fetch:
-    dependency: transitive
-    description:
-      name: background_fetch
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.3.2"
   beauty_textfield:
     dependency: "direct main"
     description:
@@ -92,13 +85,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.3.1"
-  device_info:
-    dependency: transitive
-    description:
-      name: device_info
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.4.0+3"
   firebase_auth:
     dependency: "direct main"
     description:
@@ -118,13 +104,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_background_geolocation:
-    dependency: "direct main"
-    description:
-      name: flutter_background_geolocation
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.2.4"
   flutter_test:
     dependency: "direct dev"
     description: flutter
