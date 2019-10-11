@@ -1,6 +1,5 @@
 import 'package:demo_boton/services/authentication.dart';
 import 'package:flutter/material.dart';
-import 'package:avatar_glow/avatar_glow.dart';
 import 'package:beauty_textfield/beauty_textfield.dart';
 
 class LoginSignUpPage extends StatefulWidget {
