@@ -108,7 +108,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
         // appBar: new AppBar(
         //   title: new Text('Flutter login'),
         // ),
-        backgroundColor: Color.fromRGBO(54, 58, 129, 1),
+        // backgroundColor: Color.fromRGBO(21, 19, 18, 1),
         body: Stack(
           children: <Widget>[
             _showBody(),
@@ -134,7 +134,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
         // return object of type Dialog
         return AlertDialog(
           title: new Text("Verifica tu cuenta."),
-          backgroundColor: Color.fromRGBO(54, 58, 129, 1),
+          // backgroundColor: Color.fromRGBO(21, 19, 18, 1),
           titleTextStyle: TextStyle(color: Colors.white),
           content:
               new Text("Se ha enviado un link de confirmacion a su correo."),
@@ -159,9 +159,10 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
         child: new Form(
           key: _formKey,
           child: new ListView(
-            shrinkWrap: true,
+            // shrinkWrap: true,
             children: <Widget>[
               _showLogo(),
+              _showText(),
               _showEmailInput(),
               _showPasswordInput(),
               _showPrimaryButton(),
@@ -173,7 +174,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
   }
 
   Widget _showErrorMessage() {
-    if ( _errorMessage != null && _errorMessage.length > 0 ) {
+    if (_errorMessage != null && _errorMessage.length > 0) {
       return new Text(
         _errorMessage,
         style: TextStyle(
@@ -191,21 +192,31 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
 
   Widget _showLogo() {
     return new Padding(
-        padding: EdgeInsets.fromLTRB(0, 80, 0, 0),
+        padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
         child: Image(
-          image: AssetImage('assets/signup.png'),
+          image: AssetImage('assets/logo_independencia.png'),
           height: 200,
         ));
   }
 
+  Widget _showText() {
+    return new Text(
+      'EMERGENCIA MUNICIPAL',
+      textAlign: TextAlign.center,
+      style: TextStyle(color: Colors.red, fontWeight: FontWeight.w700, fontSize: 20),
+    );
+  }
+
   Widget _showEmailInput() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(0.0, 80.0, 0.0, 0.0),
+      padding: const EdgeInsets.fromLTRB(0.0, 60.0, 0.0, 0.0),
       child: new BeautyTextfield(
         height: 50,
         width: double.maxFinite,
         maxLines: 1,
         autofocus: false,
+        backgroundColor: Color.fromRGBO(204, 185, 176, 1),
+        textColor: Colors.black54,
         prefixIcon: new Icon(Icons.mail_outline),
         placeholder: 'Correo',
         inputType: TextInputType.emailAddress,
@@ -233,6 +244,9 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
         obscureText: true,
         autofocus: false,
         height: 50,
+        backgroundColor: Color.fromRGBO(204, 185, 176, 1),
+        // textColor: Color.fromRGBO(228, 1, 51, 1),
+        textColor: Colors.black54,
         inputType: TextInputType.visiblePassword,
         width: double.maxFinite,
         prefixIcon: new Icon(Icons.lock_outline),
@@ -278,7 +292,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
           child: new FlatButton(
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(10))),
-            color: Color.fromRGBO(246, 175, 50, 1),
+            color: Color.fromRGBO(228, 1, 51, 1),
             child: _formMode == FormMode.LOGIN
                 ? new Text('Iniciar Sesion',
                     style: new TextStyle(fontSize: 20.0, color: Colors.white))
