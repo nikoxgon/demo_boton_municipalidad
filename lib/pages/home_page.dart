@@ -1,14 +1,12 @@
 import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:demo_boton/models/todo.dart';
 import 'package:demo_boton/services/authentication.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'dart:async';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-
 
 import 'package:url_launcher/url_launcher.dart';
 
@@ -33,17 +31,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   Firestore fs;
 
-  List<Todo> _todoList;
-
-  final Firestore _database = Firestore.instance;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-
-  final _textEditingController = TextEditingController();
-  StreamSubscription<QuerySnapshot> _onTodoAddedSubscription;
-  StreamSubscription<QuerySnapshot> _onTodoChangedSubscription;
-
-  Query _todoQuery;
-
   bool _isEmailVerified = false;
 
   Text text;
@@ -55,14 +43,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     super.initState();
 
     _checkEmailVerification();
-
-    _todoList = new List();
-    _todoQuery = _database
-        .collection('demo')
-        .orderBy('userId')
-        .where('id', isEqualTo: widget.userId);
-    _onTodoAddedSubscription = _todoQuery.snapshots().listen(_onEntryAdded);
-    _onTodoChangedSubscription = _todoQuery.snapshots().listen(_onEntryChanged);
   }
 
   void _checkEmailVerification() async {
@@ -94,7 +74,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           actions: <Widget>[
             new FlatButton(
               child: new Text("Reenviar"),
-              color: Colors.red,
+              textColor: Colors.red,
               onPressed: () {
                 Navigator.of(context).pop();
                 _resentVerifyEmail();
@@ -102,7 +82,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             ),
             new FlatButton(
               child: new Text("Omitir"),
-              color: Colors.red,
+              textColor: Colors.red,
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -137,25 +117,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   @override
   void dispose() {
-    _onTodoAddedSubscription.cancel();
-    _onTodoChangedSubscription.cancel();
     super.dispose();
-  }
-
-  _onEntryChanged(QuerySnapshot event) {
-    var oldEntry = _todoList.singleWhere((entry) {
-      return entry.key == event.documentChanges.single.oldIndex;
-    });
-
-    setState(() {
-      _todoList[_todoList.indexOf(oldEntry)] = Todo.fromSnapshot(event);
-    });
-  }
-
-  _onEntryAdded(QuerySnapshot event) {
-    setState(() {
-      _todoList.add(Todo.fromSnapshot(event));
-    });
   }
 
   _signOut() async {
@@ -164,109 +126,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       widget.onSignedOut();
     } catch (e) {
       print(e);
-    }
-  }
-
-  _addNewTodo(String todoItem) {
-    if (todoItem.length > 0) {
-      Todo todo = new Todo(todoItem.toString(), widget.userId, false);
-      _database.collection('todo').add(todo.toJson());
-    }
-  }
-
-  _updateTodo(Todo todo) {
-    //Toggle completed
-    todo.completed = !todo.completed;
-    if (todo != null) {
-      _database.collection('todo').document(todo.key).updateData(todo.toJson());
-    }
-  }
-
-  _deleteTodo(String todoId, int index) {
-    _database.collection('todo').document(todoId).delete().then((_) {
-      print("Delete $todoId successful");
-      setState(() {
-        _todoList.removeAt(index);
-      });
-    });
-  }
-
-  _showDialog(BuildContext context) async {
-    _textEditingController.clear();
-    await showDialog<String>(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            content: new Row(
-              children: <Widget>[
-                new Expanded(
-                    child: new TextField(
-                  controller: _textEditingController,
-                  autofocus: true,
-                  decoration: new InputDecoration(
-                    labelText: 'Add new todo',
-                  ),
-                ))
-              ],
-            ),
-            actions: <Widget>[
-              new FlatButton(
-                  child: const Text('Cancel'),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  }),
-              new FlatButton(
-                  child: const Text('Save'),
-                  onPressed: () {
-                    _addNewTodo(_textEditingController.text.toString());
-                    Navigator.pop(context);
-                  })
-            ],
-          );
-        });
-  }
-
-  Widget _showTodoList() {
-    if (_todoList.length > 0) {
-      return ListView.builder(
-          shrinkWrap: true,
-          itemCount: _todoList.length,
-          itemBuilder: (BuildContext context, int index) {
-            String todoId = _todoList[index].key;
-            String subject = _todoList[index].subject;
-            bool completed = _todoList[index].completed;
-            return Dismissible(
-              key: Key(todoId),
-              background: Container(color: Colors.red),
-              onDismissed: (direction) async {
-                _deleteTodo(todoId, index);
-              },
-              child: ListTile(
-                title: Text(
-                  subject,
-                  style: TextStyle(fontSize: 20.0),
-                ),
-                trailing: IconButton(
-                    icon: (completed)
-                        ? Icon(
-                            Icons.done_outline,
-                            color: Colors.green,
-                            size: 20.0,
-                          )
-                        : Icon(Icons.done, color: Colors.grey, size: 20.0),
-                    onPressed: () {
-                      _updateTodo(_todoList[index]);
-                    }),
-              ),
-            );
-          });
-    } else {
-      return Center(
-          child: Text(
-        "Welcome. Your list is empty",
-        textAlign: TextAlign.center,
-        style: TextStyle(fontSize: 30.0),
-      ));
     }
   }
 
@@ -373,8 +232,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             ),
           ),
           Padding(
-              padding: EdgeInsets.symmetric(vertical: 20),
-              child: CircularProgressIndicator()),
+            padding: EdgeInsets.symmetric(vertical: 20),
+            child: SizedBox(
+                width: 300, height: 300, child: CircularProgressIndicator()),
+          ),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
             child: IconButton(
@@ -413,7 +274,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       return null;
     }
   }
-
 
   void call(String number) => launch("tel:$number");
 
@@ -454,8 +314,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Widget _showAlarma() {
     return Container(
         height: double.maxFinite,
+        width: double.maxFinite,
         child: Column(
-          // alignment: AlignmentDirectional.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[

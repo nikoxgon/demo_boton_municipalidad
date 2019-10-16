@@ -5,10 +5,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+// import 'package:google_sign_in/google_sign_in.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
-final GoogleSignIn _googleSignIn = GoogleSignIn();
+// final GoogleSignIn _googleSignIn = GoogleSignIn();
 
 class SignInPage extends StatefulWidget {
   final String title = 'Registration';
@@ -379,30 +379,30 @@ class _GoogleSignInSectionState extends State<_GoogleSignInSection> {
 
   // Example code of how to sign in with google.
   void _signInWithGoogle() async {
-    final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
-    final GoogleSignInAuthentication googleAuth =
-        await googleUser.authentication;
-    final AuthCredential credential = GoogleAuthProvider.getCredential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
-    final FirebaseUser user =
-        (await _auth.signInWithCredential(credential)).user;
-    assert(user.email != null);
-    assert(user.displayName != null);
-    assert(!user.isAnonymous);
-    assert(await user.getIdToken() != null);
+    // final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
+    // final GoogleSignInAuthentication googleAuth =
+    //     await googleUser.authentication;
+    // final AuthCredential credential = GoogleAuthProvider.getCredential(
+    //   accessToken: googleAuth.accessToken,
+    //   idToken: googleAuth.idToken,
+    // );
+    // final FirebaseUser user =
+    //     (await _auth.signInWithCredential(credential)).user;
+    // assert(user.email != null);
+    // assert(user.displayName != null);
+    // assert(!user.isAnonymous);
+    // assert(await user.getIdToken() != null);
 
     final FirebaseUser currentUser = await _auth.currentUser();
-    assert(user.uid == currentUser.uid);
-    setState(() {
-      if (user != null) {
-        _success = true;
-        _userID = user.uid;
-      } else {
-        _success = false;
-      }
-    });
+    // assert(user.uid == currentUser.uid);
+    // setState(() {
+    //   if (user != null) {
+    //     _success = true;
+    //     _userID = user.uid;
+    //   } else {
+    //     _success = false;
+    //   }
+    // });
   }
 }
 

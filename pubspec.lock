@@ -15,13 +15,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.13.2"
-  avatar_glow:
-    dependency: "direct main"
-    description:
-      name: avatar_glow
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.0"
   beauty_textfield:
     dependency: "direct main"
     description:
@@ -49,7 +42,7 @@ packages:
       name: cloud_firestore
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.12.9+4"
+    version: "0.12.9+5"
   collection:
     dependency: transitive
     description:
@@ -78,13 +71,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.2"
-  curved_navigation_bar:
-    dependency: "direct main"
-    description:
-      name: curved_navigation_bar
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.3.1"
   firebase_auth:
     dependency: "direct main"
     description:
@@ -122,7 +108,7 @@ packages:
       name: geolocator
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "5.1.4"
+    version: "5.1.4+1"
   google_api_availability:
     dependency: transitive
     description:
@@ -137,13 +123,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.5.21+7"
-  google_sign_in:
-    dependency: "direct main"
-    description:
-      name: google_sign_in
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "4.0.7"
   location_permissions:
     dependency: transitive
     description:
