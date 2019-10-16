@@ -5,20 +5,6 @@ import 'package:flutter/material.dart';
 // void main() => runApp(TabBarDemo());
 void main() => runApp(Demo());
 
-_themeApp() {
-  return new ThemeData(
-      primaryColor: Color.fromRGBO(54, 58, 129, 1),
-      accentColor: Color.fromRGBO(204, 185, 176, 1),
-      buttonColor: Color.fromARGB(228, 1, 51, 1),
-      dialogBackgroundColor: Color.fromRGBO(21, 19, 18, 1),
-      tabBarTheme: TabBarTheme(
-        labelColor: Color.fromRGBO(54, 58, 129, 1),
-        unselectedLabelColor: Color.fromRGBO(204, 185, 176, 1)
-      ),
-      indicatorColor: Color.fromRGBO(54, 58, 129, 1),
-      hintColor: Colors.white70);
-}
-
 class Demo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
