@@ -110,11 +110,11 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
         // ),
         // backgroundColor: Color.fromRGBO(21, 19, 18, 1),
         body: Stack(
-          children: <Widget>[
-            _showBody(),
-            _showCircularProgress(),
-          ],
-        ));
+      children: <Widget>[
+        _showBody(),
+        _showCircularProgress(),
+      ],
+    ));
   }
 
   Widget _showCircularProgress() {
@@ -203,7 +203,8 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
     return new Text(
       'EMERGENCIA MUNICIPAL',
       textAlign: TextAlign.center,
-      style: TextStyle(color: Colors.red, fontWeight: FontWeight.w700, fontSize: 20),
+      style: TextStyle(
+          color: Colors.red, fontWeight: FontWeight.w700, fontSize: 20),
     );
   }
 
@@ -214,6 +215,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
         height: 50,
         width: double.maxFinite,
         maxLines: 1,
+        autocorrect: true,
         autofocus: false,
         backgroundColor: Color.fromRGBO(204, 185, 176, 1),
         textColor: Colors.black54,
@@ -221,15 +223,6 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
         placeholder: 'Correo',
         inputType: TextInputType.emailAddress,
         onChanged: (value) => _email = value.trim(),
-        // keyboardType: TextInputType.emailAddress,
-        // decoration: new InputDecoration(
-        //     hintText: 'Correo',
-        //     hintStyle: TextStyle(
-        //       color: Colors.white
-        //     ),
-        //     icon: new Icon(
-        //       Icons.mail,
-        //     )),
         // validator: (value) => value.isEmpty ? 'Email can\'t be empty' : null,
         // onSaved: (value) => _email = value.trim(),
       ),
@@ -245,21 +238,12 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
         autofocus: false,
         height: 50,
         backgroundColor: Color.fromRGBO(204, 185, 176, 1),
-        // textColor: Color.fromRGBO(228, 1, 51, 1),
         textColor: Colors.black54,
         inputType: TextInputType.visiblePassword,
         width: double.maxFinite,
         prefixIcon: new Icon(Icons.lock_outline),
         placeholder: 'Contraseña',
         onChanged: (value) => _password = value.trim(),
-        // decoration: new InputDecoration(
-        //     hintText: 'Contraseña',
-        //     hintStyle: TextStyle(color: Colors.white),
-        //     icon: new Icon(
-        //       Icons.lock,
-        //     )),
-        // validator: (value) => value.isEmpty ? 'Password can\'t be empty' : null,
-        // onSaved: (value) => _password = value.trim(),
       ),
     );
   }

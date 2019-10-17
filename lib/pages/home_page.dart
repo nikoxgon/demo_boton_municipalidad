@@ -38,6 +38,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   AudioPlayer audioPlayer = new AudioPlayer();
   AudioCache audioCache;
 
+  double lng = 0;
+  double lat = 0;
+
   @override
   void initState() {
     super.initState();
@@ -149,18 +152,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           if (estado) {
             Vibration.vibrate();
             _timer = Timer.periodic(Duration(seconds: 1), (callback) async {
-              print('-------- SEGUNDO:  -----------');
-              print('TICK: ' + _timer.tick.toString());
-
               if (_timer.tick > 2) {
-                print(_timer.tick);
-
-                AudioCache audioCache =
-                    new AudioCache(fixedPlayer: audioPlayer);
-                audioCache.load('audio/beep.mp3').then((onValue) {
-                  audioCache.loop('audio/beep.mp3',
-                      mode: PlayerMode.LOW_LATENCY);
-                });
+                // AudioCache audioCache =
+                //    new AudioCache(fixedPlayer: audioPlayer);
+                // audioCache.load('audio/beep.mp3').then((onValue) {
+                //  audioCache.loop('audio/beep.mp3',
+                //      mode: PlayerMode.LOW_LATENCY);
+                // });
                 await Geolocator()
                     .getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
                     .then((onValue) {
@@ -172,20 +170,22 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     Vibration.cancel();
                     setState(() {
                       sendAlert = true;
-                      audioPlayer.stop();
+                      lat = onValue.latitude;
+                      lng = onValue.longitude;
+                      // audioPlayer.stop();
                     });
                     SnackBar(content: Text('Ingresado con exito.'));
                   }).catchError((onError) {
                     SnackBar(content: Text('Error.'));
-                    print(onError);
+                    // print(onError);
                   });
                 });
-                print('-------- CANCELADO 1 -----------');
+                // print('-------- CANCELADO 1 -----------');
                 _timer.cancel();
               }
             });
           } else if (!estado && _timer.isActive) {
-            print('-------- CANCELADO 2 -----------');
+            // print('-------- CANCELADO 2 -----------');
             _timer.cancel();
           }
         },
@@ -258,7 +258,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     if (acceptAlert) {
       Completer<GoogleMapController> _controller = Completer();
       final CameraPosition _kGooglePlex = CameraPosition(
-        target: LatLng(37.42796133580664, -122.085749655962),
+        target: LatLang(lat, lng),
         zoom: 14.4746,
       );
       return Expanded(
