@@ -1,16 +1,13 @@
-import 'package:audioplayers/audio_cache.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:demo_boton/services/authentication.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'dart:async';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-
-import 'package:url_launcher/url_launcher.dart';
 
 import 'package:vibration/vibration.dart';
+
+import './shared/selection.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key, this.auth, this.userId, this.onSignedOut})
@@ -35,8 +32,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   bool _isEmailVerified = false;
 
   Text text;
-  AudioPlayer audioPlayer = new AudioPlayer();
-  AudioCache audioCache;
 
   double lng = 0;
   double lat = 0;
@@ -162,22 +157,24 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 await Geolocator()
                     .getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
                     .then((onValue) {
-                  final fb = Firestore.instance;
-                  fb.collection('latlng').add({
+                  setState(() {
+                    lat = onValue.latitude;
+                    lng = onValue.longitude;
+                  });
+                  var _data = {
                     'lat': onValue.latitude,
                     'lng': onValue.longitude
-                  }).then((val) {
-                    Vibration.cancel();
+                  };
+                  Vibration.cancel().then((onValue) {
                     setState(() {
                       sendAlert = true;
-                      lat = onValue.latitude;
-                      lng = onValue.longitude;
                       // audioPlayer.stop();
                     });
                     SnackBar(content: Text('Ingresado con exito.'));
-                  }).catchError((onError) {
-                    SnackBar(content: Text('Error.'));
-                    // print(onError);
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (BuildContext context) => SelectionPage(
+                              data: _data,
+                            )));
                   });
                 });
                 // print('-------- CANCELADO 1 -----------');
@@ -211,105 +208,24 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     }
   }
 
-  Widget _showAlarmSendMessage() {
-    if (sendAlert && !acceptAlert) {
-      return Card(
-        child: Column(children: <Widget>[
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-            child: Text(
-              'ALARMA Y UBICACION ENVIADA',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontWeight: FontWeight.w700),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Text(
-              'ESPERANDO CONFIRMACION....',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontWeight: FontWeight.w700),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 20),
-            child: SizedBox(
-                width: 300, height: 300, child: CircularProgressIndicator()),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-            child: IconButton(
-              icon: Icon(FontAwesomeIcons.map),
-              onPressed: () {
-                setState(() {
-                  acceptAlert = true;
-                });
-              },
-            ),
-          )
-        ]),
-      );
-    } else {
-      return null;
-    }
-  }
+ 
 
-  Widget _showMapNavegation() {
-    if (acceptAlert) {
-      Completer<GoogleMapController> _controller = Completer();
-      final CameraPosition _kGooglePlex = CameraPosition(
-        target: LatLang(lat, lng),
-        zoom: 14.4746,
-      );
-      return Expanded(
-          flex: 7,
-          child: GoogleMap(
-            mapType: MapType.normal,
-            initialCameraPosition: _kGooglePlex,
-            onMapCreated: (GoogleMapController controller) {
-              _controller.complete(controller);
-            },
-          ));
-    } else {
-      return null;
-    }
-  }
-
-  void call(String number) => launch("tel:$number");
-
-  Widget _showMapCall() {
-    if (acceptAlert) {
-      return Expanded(
-          flex: 1,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: <Widget>[
-              Padding(
-                child: Text(
-                  'Si necesita llamar al movil, \n solo apriete el boton',
-                  style: TextStyle(fontWeight: FontWeight.w700),
-                  textAlign: TextAlign.center,
-                ),
-                padding: EdgeInsets.symmetric(vertical: 25, horizontal: 30),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 30),
-                child: FloatingActionButton(
-                  onPressed: () {
-                    call('+56964953030');
-                  },
-                  child: Icon(Icons.call),
-                  backgroundColor: Colors.green,
-                  tooltip: 'Llamar Patrulla',
-                ),
-              )
-            ],
-          ));
-    } else {
-      return null;
-    }
-  }
+  // Widget _selectionButton() {
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.center,
+  //     mainAxisAlignment: MainAxisAlignment.center,
+  //     children: <Widget>[
+  //       MaterialButton(
+  //         child: Text('Domicilio'),
+  //         onPressed: () {},
+  //       ),
+  //       MaterialButton(
+  //         child: Text('Calle'),
+  //         onPressed: () {},
+  //       )
+  //     ],
+  //   );
+  // }
 
   Widget _showAlarma() {
     return Container(
@@ -321,9 +237,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           children: <Widget>[
             _showButton(),
             _showButtonTextAlarm(),
-            _showAlarmSendMessage(),
-            _showMapNavegation(),
-            _showMapCall()
+            // _showAlarmSendMessage(),
+            // _showMapNavegation(),
+            // _showMapCall(),
+            // _selectionButton()
           ].where((children) => children != null).toList(),
         ));
   }
@@ -336,11 +253,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           'assets/logo_independencia.png',
           height: 40,
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: Color.fromRGBO(211, 52, 69, 1),
         actions: <Widget>[
           new FlatButton(
-              child:
-                  new Icon(FontAwesomeIcons.signOutAlt, color: Colors.indigo),
+              child: new Icon(FontAwesomeIcons.signOutAlt, color: Colors.white),
               onPressed: _signOut)
         ],
       ),
