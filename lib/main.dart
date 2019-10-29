@@ -1,24 +1,27 @@
-import 'package:demo_boton/pages/root_page.dart';
-import 'package:demo_boton/services/authentication.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'pages/root_page.dart';
 import 'providers/DirectionsProvider.dart';
+import 'services/authentication.dart';
 
 // void main() => runApp(TabBarDemo());
-void main() => runApp(Demo());
+void main() {
+  Provider.debugCheckInvalidValueType = null;
+  runApp(MyApp());
+}
 
-class Demo extends StatelessWidget {
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
         builder: (_) => DirectionProvider(),
-        child: new MaterialApp(
+        child: MaterialApp(
             // title: 'Flutter login',
 
             debugShowCheckedModeBanner: false,
             // theme: _themeApp(),
 
-            home: new RootPage(auth: new Auth())));
+            home: RootPage(auth: Auth())));
   }
 }

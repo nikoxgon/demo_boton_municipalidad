@@ -1,4 +1,4 @@
-name: demo_boton
+name: seam
 description: A new Flutter project.
 
 # The following defines the version and build number for your application.
@@ -17,25 +17,37 @@ environment:
   sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
-  firebase_auth: ^0.14.0+5
-  beauty_textfield: ^0.0.1
-  geolocator: ^5.1.4+1
-  cloud_firestore: ^0.12.9+5
-  font_awesome_flutter: ^8.5.0
-  google_maps_flutter: ^0.5.21+7
-  flutter_mapbox_navigation: ^0.0.3
-  mapbox_gl: ^0.0.3
-  google_maps_webservice: ^0.0.15
-  provider: ^3.1.0+1
-  url_launcher: ^5.2.1
-  vibration: ^1.2.2
-  # splashscreen: ^1.2.0
   flutter:
     sdk: flutter
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2
+
+  # DEPENDENCIA QUE PERMITE UTILIZAR EL CAMBIO DE RUTA 
+  provider: ^3.1.0+1
+
+  # DEPENDENCIAS DE GOOGLE MAPS -> VISUALIZACION Y ROUTING
+  google_maps_flutter: ^0.5.21+8
+  google_maps_webservice: ^0.0.16
+
+  # AUTENTIFICACION DE FIREBASE
+  firebase_auth: ^0.14.0+5
+
+  # BASE DE DATOS FIRESTORE
+  cloud_firestore: ^0.12.9+5
+
+  # DEPENDENCIA DE ESTILO PARA FORMULARIO DE LOGIN
+  beauty_textfield: ^0.0.1
+
+  # VIBRADOR
+  vibration: ^1.2.2
+  # FONT AWESOME 
+  font_awesome_flutter: ^8.5.0
+  # GEOLOCALIZACION
+  geolocator: ^5.1.4+2
+  # INVOCADOR DE APPS
+  url_launcher: ^5.2.3
 
 dev_dependencies:
   flutter_test:
@@ -55,7 +67,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-   - assets/logo_independencia.png
+    - /assets/images/logo_independencia.png
   #  - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

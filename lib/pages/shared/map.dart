@@ -1,8 +1,8 @@
 import 'dart:math';
 
-import 'package:demo_boton/providers/DirectionsProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:seam/providers/DirectionsProvider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:google_maps_flutter/google_maps_flutter.dart' as maps;
@@ -29,16 +29,13 @@ class _MapPageState extends State<MapPage> {
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: Image.asset(
-          'assets/logo_independencia.png',
-          height: 40,
-        ),
+        title: Image.asset('assets/images/logo_independencia.png', fit: BoxFit.cover),
         backgroundColor: Color.fromRGBO(211, 52, 69, 1),
       ),
-      body: _showMapNavegation(),
-      // body: Column(
-      //   children: <Widget>[_showMapNavegation(), _showMapCall()],
-      // ),
+      // body: _showMapNavegation(),
+      body: Column(
+        children: <Widget>[_showMapNavegation(), _showMapCall()],
+      ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.zoom_out_map),
         onPressed: _centerView,

@@ -1,6 +1,7 @@
-import 'package:demo_boton/pages/shared/map.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
+import 'map.dart';
 
 class PendientePage extends StatefulWidget {
   PendientePage({Key key, this.data}) : super(key: key);
@@ -16,12 +17,19 @@ class _PendientePageState extends State<PendientePage> {
     return new Scaffold(
       appBar: new AppBar(
         title: Image.asset(
-          'assets/logo_independencia.png',
-          height: 40,
+          'assets/images/logo_independencia.png',
+          height: 50,
         ),
-        backgroundColor: Color.fromRGBO(211, 52, 69, 1),
+        centerTitle: true,
+        backgroundColor: Colors.white,
       ),
       body: _showAlarmSendMessage(),
+      floatingActionButton: new FloatingActionButton(
+        onPressed: () => _showMap(),
+        backgroundColor: Colors.green,
+        child: Icon(FontAwesomeIcons.map),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 
@@ -29,58 +37,28 @@ class _PendientePageState extends State<PendientePage> {
     return Center(
       child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            Card(
-              margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                    child: Text(
-                      'ALARMA Y UBICACION ENVIADA',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontWeight: FontWeight.w700),
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20),
-                    child: Text(
-                      'ESPERANDO CONFIRMACION....',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontWeight: FontWeight.w700),
-                    ),
-                  ),
-                ]),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: new Text(
+                'ALARMA Y UBICACION ENVIADA',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 26),
               ),
             ),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 20),
-              child: SizedBox(
-                  width: 100, height: 100, child: CircularProgressIndicator()),
+            SizedBox(
+                width: 150,
+                height: 150,
+                child: CircularProgressIndicator(
+                  strokeWidth: 5,
+                  valueColor: new AlwaysStoppedAnimation<Color>(Colors.red),
+                )),
+            Text(
+              'ESPERANDO CONFIRMACION....',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-              child: MaterialButton(
-                color: Colors.green,
-                textColor: Colors.white,
-                onPressed: () => _showMap(),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Icon(FontAwesomeIcons.map),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text('Mostrar Mapa'),
-                      )
-                    ]),
-              ),
-            )
           ]),
     );
   }

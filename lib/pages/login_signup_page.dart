@@ -1,6 +1,6 @@
-import 'package:demo_boton/services/authentication.dart';
 import 'package:flutter/material.dart';
 import 'package:beauty_textfield/beauty_textfield.dart';
+import 'package:seam/services/authentication.dart';
 
 class LoginSignUpPage extends StatefulWidget {
   LoginSignUpPage({this.auth, this.onSignedIn});
@@ -166,7 +166,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
               _showEmailInput(),
               _showPasswordInput(),
               _showPrimaryButton(),
-              _showSecondaryButton(),
+              // _showSecondaryButton(),
               _showErrorMessage(),
             ],
           ),
@@ -193,8 +193,8 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
   Widget _showLogo() {
     return new Padding(
         padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
-        child: Image(
-          image: AssetImage('assets/logo_independencia.png'),
+        child: new Image(
+          image: AssetImage('assets/images/logo_independencia.png'),
           height: 200,
         ));
   }
@@ -219,6 +219,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
         autofocus: false,
         backgroundColor: Color.fromRGBO(204, 185, 176, 1),
         textColor: Colors.black54,
+        cornerRadius: BorderRadius.circular(50),
         prefixIcon: new Icon(Icons.mail_outline),
         placeholder: 'Correo',
         inputType: TextInputType.emailAddress,
@@ -239,6 +240,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
         height: 50,
         backgroundColor: Color.fromRGBO(204, 185, 176, 1),
         textColor: Colors.black54,
+        cornerRadius: BorderRadius.circular(50),
         inputType: TextInputType.visiblePassword,
         width: double.maxFinite,
         prefixIcon: new Icon(Icons.lock_outline),
@@ -269,13 +271,13 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
 
   Widget _showPrimaryButton() {
     return new Padding(
-        padding: EdgeInsets.fromLTRB(0.0, 40.0, 0.0, 0.0),
+        padding: EdgeInsets.fromLTRB(10.0, 40.0, 10.0, 0.0),
         child: SizedBox(
           height: 50.0,
           width: double.infinity,
           child: new FlatButton(
             shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(10))),
+                borderRadius: BorderRadius.all(Radius.circular(50))),
             color: Color.fromRGBO(228, 1, 51, 1),
             child: _formMode == FormMode.LOGIN
                 ? new Text('Iniciar Sesion',

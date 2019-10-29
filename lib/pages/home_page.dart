@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:demo_boton/services/authentication.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'dart:async';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:seam/services/authentication.dart';
 
 import 'package:vibration/vibration.dart';
 
@@ -145,7 +145,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         )),
         onHighlightChanged: (estado) {
           if (estado) {
-            Vibration.vibrate();
             _timer = Timer.periodic(Duration(seconds: 1), (callback) async {
               if (_timer.tick > 2) {
                 // AudioCache audioCache =
@@ -154,6 +153,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 //  audioCache.loop('audio/beep.mp3',
                 //      mode: PlayerMode.LOW_LATENCY);
                 // });
+                Vibration.vibrate();
                 await Geolocator()
                     .getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
                     .then((onValue) {
@@ -165,17 +165,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     'lat': onValue.latitude,
                     'lng': onValue.longitude
                   };
-                  Vibration.cancel().then((onValue) {
-                    setState(() {
-                      sendAlert = true;
-                      // audioPlayer.stop();
-                    });
-                    SnackBar(content: Text('Ingresado con exito.'));
-                    Navigator.of(context).pushReplacement(MaterialPageRoute(
-                        builder: (BuildContext context) => SelectionPage(
-                              data: _data,
-                            )));
-                  });
+                  SnackBar(content: Text('Ingresado con exito.'));
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (BuildContext context) => SelectionPage(
+                            data: _data,
+                          )));
                 });
                 // print('-------- CANCELADO 1 -----------');
                 _timer.cancel();
@@ -207,8 +201,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       return null;
     }
   }
-
- 
 
   // Widget _selectionButton() {
   //   return Column(
@@ -249,10 +241,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: Image.asset(
-          'assets/logo_independencia.png',
-          height: 40,
-        ),
+        title: Image.asset('assets/images/logo_independencia.png',
+            fit: BoxFit.cover),
         backgroundColor: Color.fromRGBO(211, 52, 69, 1),
         actions: <Widget>[
           new FlatButton(

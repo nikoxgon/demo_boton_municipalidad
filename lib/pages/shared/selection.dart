@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:demo_boton/pages/shared/pendiente.dart';
 import 'package:flutter/material.dart';
+
+import 'pendiente.dart';
 
 class SelectionPage extends StatefulWidget {
   SelectionPage({Key key, this.data}) : super(key: key);
@@ -16,7 +17,7 @@ class _SelectionPageState extends State<SelectionPage> {
     return new Scaffold(
       appBar: new AppBar(
         title: Image.asset(
-          'assets/logo_independencia.png',
+          'assets/images/logo_independencia.png',
           height: 40,
         ),
         backgroundColor: Color.fromRGBO(211, 52, 69, 1),
