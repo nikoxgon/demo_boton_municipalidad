@@ -162,7 +162,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     lng = onValue.longitude;
                   });
                   var _data = {
-                    'latLng': {onValue.latitude, onValue.longitude},
+                    'latLng': GeoPoint(onValue.latitude, onValue.longitude),
                     'lat': onValue.latitude,
                     'lng': onValue.longitude,
                     'estado': 'Pendiente'

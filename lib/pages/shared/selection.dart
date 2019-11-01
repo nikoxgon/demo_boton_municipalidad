@@ -72,7 +72,6 @@ class _SelectionPageState extends State<SelectionPage> {
       widget.data['tipo'] = 'Domicilio';
     } else {
       widget.data['tipo'] = 'Calle';
-
     }
 
     Firestore.instance.collection('avisos').add(widget.data).then((onValue) {

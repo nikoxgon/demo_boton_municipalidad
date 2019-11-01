@@ -17,7 +17,7 @@ class _PendientePageState extends State<PendientePage> {
     return new Scaffold(
       appBar: new AppBar(
         title: Image.asset(
-          'assets/images/logo_independencia.png',
+          'assets/images/logo_white.png',
           height: 50,
         ),
         centerTitle: true,
