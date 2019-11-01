@@ -105,6 +105,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
   Widget build(BuildContext context) {
     _isIos = Theme.of(context).platform == TargetPlatform.iOS;
     return new Scaffold(
+      backgroundColor: Color.fromRGBO(211, 52, 69, 1),
         // appBar: new AppBar(
         //   title: new Text('Flutter login'),
         // ),
@@ -179,7 +180,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
         _errorMessage,
         style: TextStyle(
             fontSize: 13.0,
-            color: Colors.red,
+            color: Colors.white,
             height: 1.0,
             fontWeight: FontWeight.w300),
       );
@@ -194,7 +195,8 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
     return new Padding(
         padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
         child: new Image(
-          image: AssetImage('assets/images/logo_independencia.png'),
+          image: AssetImage('assets/images/logo_white.png'),
+
           height: 200,
         ));
   }
@@ -204,7 +206,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
       'EMERGENCIA MUNICIPAL',
       textAlign: TextAlign.center,
       style: TextStyle(
-          color: Colors.red, fontWeight: FontWeight.w700, fontSize: 20),
+          color: Colors.white70, fontWeight: FontWeight.w700, fontSize: 22),
     );
   }
 
@@ -217,7 +219,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
         maxLines: 1,
         autocorrect: true,
         autofocus: false,
-        backgroundColor: Color.fromRGBO(204, 185, 176, 1),
+        backgroundColor: Color.fromRGBO(211, 52, 69, 1),
         textColor: Colors.black54,
         cornerRadius: BorderRadius.circular(50),
         prefixIcon: new Icon(Icons.mail_outline),
@@ -238,7 +240,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
         obscureText: true,
         autofocus: false,
         height: 50,
-        backgroundColor: Color.fromRGBO(204, 185, 176, 1),
+        backgroundColor: Color.fromRGBO(211, 52, 69, 1),
         textColor: Colors.black54,
         cornerRadius: BorderRadius.circular(50),
         inputType: TextInputType.visiblePassword,
@@ -278,12 +280,12 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
           child: new FlatButton(
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(50))),
-            color: Color.fromRGBO(228, 1, 51, 1),
+            color: Colors.white,
             child: _formMode == FormMode.LOGIN
                 ? new Text('Iniciar Sesion',
-                    style: new TextStyle(fontSize: 20.0, color: Colors.white))
+                    style: new TextStyle(fontSize: 20.0, color: Color.fromRGBO(211, 52, 69, 1)))
                 : new Text('Crear Cuenta',
-                    style: new TextStyle(fontSize: 20.0, color: Colors.white)),
+                    style: new TextStyle(fontSize: 20.0, color: Color.fromRGBO(211, 52, 69, 1))),
             onPressed: _validateAndSubmit,
           ),
         ));

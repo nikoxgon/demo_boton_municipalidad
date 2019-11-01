@@ -130,14 +130,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Widget _showButton() {
     if (!sendAlert) {
       return RawMaterialButton(
-        fillColor: Colors.red.shade500,
-        highlightColor: Colors.red.shade800,
-        elevation: 2,
+        fillColor: Color.fromRGBO(228, 1, 51, 1),
+        highlightColor: Colors.red.shade700,
+        elevation: 10,
         constraints: BoxConstraints(
             minWidth: 250, minHeight: 250, maxWidth: 250, maxHeight: 250),
         child:
             Icon(FontAwesomeIcons.exclamation, color: Colors.white, size: 130),
-        highlightElevation: 10,
+        highlightElevation: 0,
         shape: CircleBorder(
             side: BorderSide(
           color: Colors.grey.shade400,
@@ -162,8 +162,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     lng = onValue.longitude;
                   });
                   var _data = {
+                    'latLng': {onValue.latitude, onValue.longitude},
                     'lat': onValue.latitude,
-                    'lng': onValue.longitude
+                    'lng': onValue.longitude,
+                    'estado': 'Pendiente'
                   };
                   SnackBar(content: Text('Ingresado con exito.'));
                   Navigator.of(context).pushReplacement(MaterialPageRoute(
@@ -241,9 +243,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: Image.asset('assets/images/logo_independencia.png',
-            fit: BoxFit.cover),
-        backgroundColor: Color.fromRGBO(211, 52, 69, 1),
+        centerTitle: true,
+        title: Image.asset(
+          'assets/images/logo_white.png',
+          height: 45,
+        ),
+        backgroundColor: Color.fromRGBO(228, 1, 51, 1),
         actions: <Widget>[
           new FlatButton(
               child: new Icon(FontAwesomeIcons.signOutAlt, color: Colors.white),

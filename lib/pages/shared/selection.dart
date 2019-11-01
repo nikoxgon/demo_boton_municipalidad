@@ -16,9 +16,10 @@ class _SelectionPageState extends State<SelectionPage> {
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
+        centerTitle: true,
         title: Image.asset(
-          'assets/images/logo_independencia.png',
-          height: 40,
+          'assets/images/logo_white.png',
+          height: 45,
         ),
         backgroundColor: Color.fromRGBO(211, 52, 69, 1),
       ),
@@ -67,7 +68,12 @@ class _SelectionPageState extends State<SelectionPage> {
   }
 
   void _setData(double tipo) {
-    widget.data['tipo'] = tipo;
+    if(tipo == 1){
+      widget.data['tipo'] = 'Domicilio';
+    } else {
+      widget.data['tipo'] = 'Calle';
+
+    }
 
     Firestore.instance.collection('avisos').add(widget.data).then((onValue) {
       Navigator.of(context).pushReplacement(MaterialPageRoute(
