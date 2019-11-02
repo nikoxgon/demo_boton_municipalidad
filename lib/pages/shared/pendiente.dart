@@ -21,7 +21,7 @@ class _PendientePageState extends State<PendientePage> {
           height: 50,
         ),
         centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: Color.fromRGBO(211, 52, 69, 1),
       ),
       body: _showAlarmSendMessage(),
       floatingActionButton: new FloatingActionButton(

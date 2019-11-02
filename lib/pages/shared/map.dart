@@ -35,6 +35,8 @@ class _MapPageState extends State<MapPage> {
       // body: _showMapNavegation(),
       body: Column(
         children: <Widget>[_showMapNavegation(), _showMapCall()],
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.zoom_out_map),
@@ -48,16 +50,21 @@ class _MapPageState extends State<MapPage> {
   Widget _showMapNavegation() {
     return Consumer<DirectionProvider>(
         builder: (BuildContext context, DirectionProvider api, Widget child) {
-      return maps.GoogleMap(
-        initialCameraPosition: maps.CameraPosition(
-          target: widget.fromPoint,
-          zoom: 12,
-        ),
-        markers: _createMarkers(),
-        polylines: _currentRoute(api.currentRoute),
-        onMapCreated: _onMapCreated,
-        myLocationEnabled: true,
-        myLocationButtonEnabled: true,
+      return Stack(
+        children: <Widget>[
+          maps.GoogleMap(
+
+            initialCameraPosition: maps.CameraPosition(
+              target: widget.fromPoint,
+              zoom: 12,
+            ),
+            markers: _createMarkers(),
+            polylines: _currentRoute(api.currentRoute),
+            onMapCreated: _onMapCreated,
+            myLocationEnabled: true,
+            myLocationButtonEnabled: true,
+          ),
+        ],
       );
     });
   }
