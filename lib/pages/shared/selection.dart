@@ -1,5 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+import 'package:seam/services/authentication.dart';
 
 import 'pendiente.dart';
 
@@ -74,6 +77,9 @@ class _SelectionPageState extends State<SelectionPage> {
       widget.data['tipo'] = 'Calle';
     }
 
+    // SET TIMESTAMP AND REF USER
+    widget.data['timestamp'] = FieldValue.serverTimestamp();
+    
     Firestore.instance.collection('avisos').add(widget.data).then((onValue) {
       Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (BuildContext context) => PendientePage(

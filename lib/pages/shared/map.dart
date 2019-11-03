@@ -61,7 +61,7 @@ class _MapPageState extends State<MapPage> {
 
   Widget _showMapNavegation(api) {
     return Expanded (
-      flex: 14,
+      flex: 13,
       child: maps.GoogleMap(
         initialCameraPosition: maps.CameraPosition(
           target: widget.fromPoint,
