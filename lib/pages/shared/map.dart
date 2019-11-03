@@ -21,6 +21,12 @@ class MapPage extends StatefulWidget {
 
 class _MapPageState extends State<MapPage> {
   maps.GoogleMapController _mapController;
+  // CENTER VIEW POINTS
+  double _center_left;
+  double _center_top;
+  double _center_right;
+  double _center_bottom;
+  // END CENTER VIEW POINTS
 
   @override
   void initState() => super.initState();
@@ -29,44 +35,43 @@ class _MapPageState extends State<MapPage> {
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: Image.asset('assets/images/logo_independencia.png', fit: BoxFit.cover),
-        backgroundColor: Color.fromRGBO(211, 52, 69, 1),
+        title: Image.asset(
+          'assets/images/logo_white.png',
+          height: 45,
+        ),
+        backgroundColor: Color.fromRGBO(228, 1, 51, 1),
+        centerTitle: true,
       ),
       // body: _showMapNavegation(),
-      body: Column(
-        children: <Widget>[_showMapNavegation(), _showMapCall()],
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      ),
+      body: Consumer<DirectionProvider>(
+          builder: (BuildContext context, DirectionProvider api, Widget child) {
+        return Column(
+          children: <Widget>[_showMapNavegation(api), _showMapCall()],
+        );
+      }),
+      /*
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.zoom_out_map),
         onPressed: _centerView,
-        
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      */
     );
   }
 
-  Widget _showMapNavegation() {
-    return Consumer<DirectionProvider>(
-        builder: (BuildContext context, DirectionProvider api, Widget child) {
-      return Stack(
-        children: <Widget>[
-          maps.GoogleMap(
-
-            initialCameraPosition: maps.CameraPosition(
-              target: widget.fromPoint,
-              zoom: 12,
-            ),
-            markers: _createMarkers(),
-            polylines: _currentRoute(api.currentRoute),
-            onMapCreated: _onMapCreated,
-            myLocationEnabled: true,
-            myLocationButtonEnabled: true,
-          ),
-        ],
-      );
-    });
+  Widget _showMapNavegation(api) {
+    return Expanded (
+      flex: 14,
+      child: maps.GoogleMap(
+        initialCameraPosition: maps.CameraPosition(
+          target: widget.fromPoint,
+          zoom: 12,
+        ),
+        markers: _createMarkers(),
+        polylines: _currentRoute(api.currentRoute),
+        onMapCreated: _onMapCreated,
+      ),
+    );
   }
 
   Set<maps.Polyline> _currentRoute(route) {
@@ -81,20 +86,22 @@ class _MapPageState extends State<MapPage> {
 
   _centerView() async {
     await _mapController.getVisibleRegion().then((onValue) {
-      var left = min(widget.fromPoint.latitude, widget.toPoint.latitude);
-      var right = max(widget.fromPoint.latitude, widget.toPoint.latitude);
-      var top = max(widget.fromPoint.longitude, widget.toPoint.longitude);
-      var bottom = min(widget.fromPoint.longitude, widget.toPoint.longitude);
+      if (_center_bottom == null) {
+        var api = Provider.of<DirectionProvider>(context);
+        api.findDirections(widget.fromPoint, widget.toPoint);
+      }
+      _center_left = min(widget.fromPoint.latitude, widget.toPoint.latitude);
+      _center_right = max(widget.fromPoint.latitude, widget.toPoint.latitude);
+      _center_top = max(widget.fromPoint.longitude, widget.toPoint.longitude);
+      _center_bottom =
+          min(widget.fromPoint.longitude, widget.toPoint.longitude);
 
       var bounds = maps.LatLngBounds(
-        southwest: maps.LatLng(left, bottom),
-        northeast: maps.LatLng(right, top),
+        southwest: maps.LatLng(_center_left, _center_bottom),
+        northeast: maps.LatLng(_center_right, _center_top),
       );
       var cameraUpdate = maps.CameraUpdate.newLatLngBounds(bounds, 50);
       _mapController.animateCamera(cameraUpdate);
-
-      var api = Provider.of<DirectionProvider>(context);
-      api.findDirections(widget.fromPoint, widget.toPoint);
     });
   }
 
@@ -123,7 +130,7 @@ class _MapPageState extends State<MapPage> {
 
   Widget _showMapCall() {
     return Expanded(
-        flex: 1,
+      flex: 2,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.end,

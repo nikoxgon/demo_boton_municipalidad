@@ -18,10 +18,10 @@ class _PendientePageState extends State<PendientePage> {
       appBar: new AppBar(
         title: Image.asset(
           'assets/images/logo_white.png',
-          height: 50,
+          height: 45,
         ),
         centerTitle: true,
-        backgroundColor: Color.fromRGBO(211, 52, 69, 1),
+        backgroundColor: Color.fromRGBO(228, 1, 51, 1),
       ),
       body: _showAlarmSendMessage(),
       floatingActionButton: new FloatingActionButton(
