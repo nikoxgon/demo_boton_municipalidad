@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 abstract class BaseAuth {
@@ -49,4 +50,10 @@ class Auth implements BaseAuth {
     return user.isEmailVerified;
   }
 
+  Future<DocumentReference> getUserId() async {
+    final Firestore _firestore = Firestore.instance;
+    FirebaseUser user = await _firebaseAuth.currentUser();
+    DocumentReference ref = _firestore.collection('users').document(user.email);
+    return ref;
+  }
 }
