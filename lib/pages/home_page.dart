@@ -156,17 +156,18 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 Vibration.vibrate();
                 await Geolocator()
                     .getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
-                    .then((onValue) {
+                    .then((onValue) async {
                   setState(() {
                     lat = onValue.latitude;
                     lng = onValue.longitude;
                   });
+                  DocumentReference user = await Auth().getUserId();
                   var _data = {
                     'latLng': GeoPoint(onValue.latitude, onValue.longitude),
                     'lat': onValue.latitude,
                     'lng': onValue.longitude,
                     'estado': 'Pendiente',
-                    'userId': Auth().getUserId()
+                    'userId': user
                   };
                   SnackBar(content: Text('Ingresado con exito.'));
                   Navigator.of(context).pushReplacement(MaterialPageRoute(
