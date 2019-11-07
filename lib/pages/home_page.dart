@@ -33,8 +33,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   Text text;
 
-  double lng = 0;
-  double lat = 0;
+  //double lng = 0;
+  //double lat = 0;
 
   @override
   void initState() {
@@ -157,10 +157,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 await Geolocator()
                     .getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
                     .then((onValue) async {
-                  setState(() {
-                    lat = onValue.latitude;
-                    lng = onValue.longitude;
-                  });
                   DocumentReference user = await Auth().getUserId();
                   var _data = {
                     'latLng': GeoPoint(onValue.latitude, onValue.longitude),

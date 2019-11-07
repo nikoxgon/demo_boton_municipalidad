@@ -8,7 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as maps;
 
 class MapPage extends StatefulWidget {
-  final maps.LatLng fromPoint = maps.LatLng(-34.187387, -70.675984);
+  // final maps.LatLng fromPoint = maps.LatLng(-34.187387, -70.675984);
   final maps.LatLng toPoint = maps.LatLng(-34.180663, -70.708399);
 
   MapPage({Key key, this.data}) : super(key: key);
@@ -64,7 +64,7 @@ class _MapPageState extends State<MapPage> {
       flex: 13,
       child: maps.GoogleMap(
         initialCameraPosition: maps.CameraPosition(
-          target: widget.fromPoint,
+          target: _getInitialCamera,
           zoom: 12,
         ),
         markers: _createMarkers(),
@@ -78,6 +78,10 @@ class _MapPageState extends State<MapPage> {
     return route;
   }
 
+  get _getInitialCamera {
+    return new maps.LatLng(widget.data['lat'], widget.data['lng']);
+  }
+
   void _onMapCreated(maps.GoogleMapController controller) {
     _mapController = controller;
 
@@ -88,13 +92,13 @@ class _MapPageState extends State<MapPage> {
     await _mapController.getVisibleRegion().then((onValue) {
       if (_center_bottom == null) {
         var api = Provider.of<DirectionProvider>(context);
-        api.findDirections(widget.fromPoint, widget.toPoint);
+        api.findDirections(_getInitialCamera, widget.toPoint);
       }
-      _center_left = min(widget.fromPoint.latitude, widget.toPoint.latitude);
-      _center_right = max(widget.fromPoint.latitude, widget.toPoint.latitude);
-      _center_top = max(widget.fromPoint.longitude, widget.toPoint.longitude);
+      _center_left = min(widget.data['lat'], widget.toPoint.latitude);
+      _center_right = max(widget.data['lat'], widget.toPoint.latitude);
+      _center_top = max(widget.data['lng'], widget.toPoint.longitude);
       _center_bottom =
-          min(widget.fromPoint.longitude, widget.toPoint.longitude);
+          min(widget.data['lng'], widget.toPoint.longitude);
 
       var bounds = maps.LatLngBounds(
         southwest: maps.LatLng(_center_left, _center_bottom),
@@ -108,14 +112,14 @@ class _MapPageState extends State<MapPage> {
   Set<maps.Marker> _createMarkers() {
     var tmp = Set<maps.Marker>();
 
-    tmp.add(
-      maps.Marker(
-        markerId: maps.MarkerId("fromPoint"),
-        position: widget.fromPoint,
-        icon: maps.BitmapDescriptor.defaultMarkerWithHue(100),
-        infoWindow: maps.InfoWindow(title: "Destino A"),
-      ),
-    );
+    // tmp.add(
+    //   maps.Marker(
+    //     markerId: maps.MarkerId("fromPoint"),
+    //     position: _getInitialCamera,
+    //     icon: maps.BitmapDescriptor.defaultMarkerWithHue(100),
+    //     infoWindow: maps.InfoWindow(title: "Destino A"),
+    //   ),
+    // );
     tmp.add(
       maps.Marker(
         markerId: maps.MarkerId("toPoint"),
