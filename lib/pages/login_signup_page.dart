@@ -105,17 +105,17 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
   Widget build(BuildContext context) {
     _isIos = Theme.of(context).platform == TargetPlatform.iOS;
     return new Scaffold(
-      backgroundColor: Color.fromRGBO(211, 52, 69, 1),
+        backgroundColor: Color.fromRGBO(211, 52, 69, 1),
         // appBar: new AppBar(
         //   title: new Text('Flutter login'),
         // ),
         // backgroundColor: Color.fromRGBO(21, 19, 18, 1),
         body: Stack(
-      children: <Widget>[
-        _showBody(),
-        _showCircularProgress(),
-      ],
-    ));
+          children: <Widget>[
+            _showBody(),
+            _showCircularProgress(),
+          ],
+        ));
   }
 
   Widget _showCircularProgress() {
@@ -196,7 +196,6 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
         padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
         child: new Image(
           image: AssetImage('assets/images/logo_white.png'),
-
           height: 200,
         ));
   }
@@ -221,7 +220,8 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
         autofocus: false,
         backgroundColor: Color.fromRGBO(211, 52, 69, 1),
         accentColor: Colors.white,
-        textColor: Colors.black54,
+        textColor: Colors.black87,
+        wordSpacing: 1,
         cornerRadius: BorderRadius.circular(50),
         prefixIcon: new Icon(Icons.mail_outline),
         placeholder: 'Correo',
@@ -285,9 +285,11 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
             color: Colors.white,
             child: _formMode == FormMode.LOGIN
                 ? new Text('Iniciar Sesion',
-                    style: new TextStyle(fontSize: 20.0, color: Color.fromRGBO(211, 52, 69, 1)))
+                    style: new TextStyle(
+                        fontSize: 20.0, color: Color.fromRGBO(211, 52, 69, 1)))
                 : new Text('Crear Cuenta',
-                    style: new TextStyle(fontSize: 20.0, color: Color.fromRGBO(211, 52, 69, 1))),
+                    style: new TextStyle(
+                        fontSize: 20.0, color: Color.fromRGBO(211, 52, 69, 1))),
             onPressed: _validateAndSubmit,
           ),
         ));

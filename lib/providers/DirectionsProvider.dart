@@ -3,7 +3,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart' as maps;
 import 'package:google_maps_webservice/directions.dart';
 
 class DirectionProvider extends ChangeNotifier {
-  GoogleMapsDirections directionsApi = GoogleMapsDirections(apiKey: 'AIzaSyARNazLGuM9cfrvzhU2LUvCXFD2KtlMUKQ');
+  GoogleMapsDirections directionsApi =
+      GoogleMapsDirections(apiKey: 'AIzaSyARNazLGuM9cfrvzhU2LUvCXFD2KtlMUKQ');
 
   Set<maps.Polyline> _route = Set();
 
