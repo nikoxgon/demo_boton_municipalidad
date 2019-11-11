@@ -49,4 +49,17 @@ class DirectionProvider extends ChangeNotifier {
       print("ERRROR !!! ${result.status}");
     }
   }
+
+  getDistance(Location origen, Location destino) {
+    directionsApi.directionsWithLocation(
+      origen,
+      destino,
+      travelMode: TravelMode.driving,
+    ).then((onValue) {
+      var _distance = onValue.routes.first.legs.first.distance.value;
+      return _distance;
+    });
+
+  }
+  
 }

@@ -1,5 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_webservice/directions.dart';
+import 'package:provider/provider.dart';
+import 'package:seam/providers/DirectionsProvider.dart';
 
 import 'map.dart';
 
@@ -12,8 +17,10 @@ class PendientePage extends StatefulWidget {
 }
 
 class _PendientePageState extends State<PendientePage> {
+  String message = 'BUSCANDO PATRULLA MAS CERCANA...';
   @override
   Widget build(BuildContext context) {
+    _searchPatrullas();
     return new Scaffold(
       appBar: new AppBar(
         title: Image.asset(
@@ -42,7 +49,7 @@ class _PendientePageState extends State<PendientePage> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: new Text(
-                'ALARMA Y UBICACION ENVIADA',
+                'ALERTA Y UBICACION ENVIADA',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 26),
               ),
@@ -55,7 +62,7 @@ class _PendientePageState extends State<PendientePage> {
                   valueColor: new AlwaysStoppedAnimation<Color>(Colors.red),
                 )),
             Text(
-              'ESPERANDO CONFIRMACION....',
+              message,
               textAlign: TextAlign.center,
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
@@ -68,5 +75,43 @@ class _PendientePageState extends State<PendientePage> {
         builder: (BuildContext context) => MapPage(
               data: widget.data,
             )));
+  }
+
+  _searchPatrullas() {
+    var fs = Firestore.instance;
+    var origen = Location(widget.data['lat'], widget.data['lng']);
+    var patrullas = fs
+        .collection('patrullas')
+        .where('estado', isEqualTo: 'activo')
+        .snapshots()
+    
+  }
+
+  _getPatrullaSeleccionada(origen, patrullas) {
+    var api = Provider.of<DirectionProvider>(context);
+    patrullas.then((onValue) {
+      String patrullaId;
+      int patrullaDistancia = 0;
+      onValue.documents
+        .forEach((values) async {
+          var destino = Location(values.data['lat'], values.data['lng']);
+          int distancia = await api.getDistance(origen, destino);
+          print(values.documentID);
+          print(distancia);
+          if (patrullaDistancia == 0) {
+            patrullaId = values.documentID;
+            patrullaDistancia = distancia;
+          } else {
+            if (distancia < patrullaDistancia) {
+              patrullaId = values.documentID;
+              patrullaDistancia = distancia;
+            }
+          }
+        });
+      print(patrullaId);
+      this.message = 'ESPERANDO CONFIRMACION...';
+    }).catchError((onError) {
+      print(onError);
+    });
   }
 }
