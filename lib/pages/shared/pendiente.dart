@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_webservice/directions.dart';
 import 'package:provider/provider.dart';
 import 'package:seam/providers/DirectionsProvider.dart';
@@ -83,7 +82,7 @@ class _PendientePageState extends State<PendientePage> {
     var patrullas = fs
         .collection('patrullas')
         .where('estado', isEqualTo: 'activo')
-        .snapshots()
+        .snapshots();
     
   }
 

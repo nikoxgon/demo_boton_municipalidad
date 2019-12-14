@@ -6,10 +6,10 @@ import 'dart:io';
 import 'package:google_maps_webservice/directions.dart';
 import 'package:google_maps_webservice/distance.dart';
 
-final directions =
-    GoogleMapsDirections(apiKey: Platform.environment['AIzaSyARNazLGuM9cfrvzhU2LUvCXFD2KtlMUKQ']);
-final GoogleDistanceMatrix distanceMatrix =
-    GoogleDistanceMatrix(apiKey: Platform.environment['AIzaSyARNazLGuM9cfrvzhU2LUvCXFD2KtlMUKQ']);
+final directions = GoogleMapsDirections(
+    apiKey: Platform.environment['AIzaSyARNazLGuM9cfrvzhU2LUvCXFD2KtlMUKQ']);
+final GoogleDistanceMatrix distanceMatrix = GoogleDistanceMatrix(
+    apiKey: Platform.environment['AIzaSyARNazLGuM9cfrvzhU2LUvCXFD2KtlMUKQ']);
 
 Future<void> direction() async {
   DirectionsResponse res =
@@ -28,7 +28,6 @@ Future<void> direction() async {
 
   directions.dispose();
 }
-
 
 Future<void> distance() async {
   List<Location> origins = [

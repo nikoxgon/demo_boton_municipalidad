@@ -22,20 +22,20 @@ dependencies:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^0.1.2
+  cupertino_icons: ^0.1.3
 
   # DEPENDENCIA QUE PERMITE UTILIZAR EL CAMBIO DE RUTA 
-  provider: ^3.1.0+1
+  provider: ^3.2.0
 
   # DEPENDENCIAS DE GOOGLE MAPS -> VISUALIZACION Y ROUTING
-  google_maps_flutter: ^0.5.21+8
+  google_maps_flutter: ^0.5.21+15
   google_maps_webservice: ^0.0.16
 
   # AUTENTIFICACION DE FIREBASE
-  firebase_auth: ^0.14.0+5
+  firebase_auth: ^0.15.2
 
   # BASE DE DATOS FIRESTORE
-  cloud_firestore: ^0.12.9+5
+  cloud_firestore: ^0.13.0+1
 
   # DEPENDENCIA DE ESTILO PARA FORMULARIO DE LOGIN
   beauty_textfield: ^0.0.1
@@ -45,9 +45,9 @@ dependencies:
   # FONT AWESOME 
   font_awesome_flutter: ^8.5.0
   # GEOLOCALIZACION
-  geolocator: ^5.1.4+2
+  geolocator: ^5.1.5
   # INVOCADOR DE APPS
-  url_launcher: ^5.2.3
+  url_launcher: ^5.4.1
 
 dev_dependencies:
   flutter_test:

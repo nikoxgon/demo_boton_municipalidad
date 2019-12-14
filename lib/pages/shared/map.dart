@@ -22,10 +22,10 @@ class MapPage extends StatefulWidget {
 class _MapPageState extends State<MapPage> {
   maps.GoogleMapController _mapController;
   // CENTER VIEW POINTS
-  double _center_left;
-  double _center_top;
-  double _center_right;
-  double _center_bottom;
+  double center_left;
+  double center_top;
+  double center_right;
+  double center_bottom;
   // END CENTER VIEW POINTS
 
   @override
@@ -60,7 +60,7 @@ class _MapPageState extends State<MapPage> {
   }
 
   Widget _showMapNavegation(api) {
-    return Expanded (
+    return Expanded(
       flex: 13,
       child: maps.GoogleMap(
         initialCameraPosition: maps.CameraPosition(
@@ -90,19 +90,18 @@ class _MapPageState extends State<MapPage> {
 
   _centerView() async {
     await _mapController.getVisibleRegion().then((onValue) {
-      if (_center_bottom == null) {
+      if (center_bottom == null) {
         var api = Provider.of<DirectionProvider>(context);
         api.findDirections(_getInitialCamera, widget.toPoint);
       }
-      _center_left = min(widget.data['lat'], widget.toPoint.latitude);
-      _center_right = max(widget.data['lat'], widget.toPoint.latitude);
-      _center_top = max(widget.data['lng'], widget.toPoint.longitude);
-      _center_bottom =
-          min(widget.data['lng'], widget.toPoint.longitude);
+      center_left = min(widget.data['lat'], widget.toPoint.latitude);
+      center_right = max(widget.data['lat'], widget.toPoint.latitude);
+      center_top = max(widget.data['lng'], widget.toPoint.longitude);
+      center_bottom = min(widget.data['lng'], widget.toPoint.longitude);
 
       var bounds = maps.LatLngBounds(
-        southwest: maps.LatLng(_center_left, _center_bottom),
-        northeast: maps.LatLng(_center_right, _center_top),
+        southwest: maps.LatLng(center_left, center_bottom),
+        northeast: maps.LatLng(center_right, center_top),
       );
       var cameraUpdate = maps.CameraUpdate.newLatLngBounds(bounds, 50);
       _mapController.animateCamera(cameraUpdate);
@@ -134,7 +133,7 @@ class _MapPageState extends State<MapPage> {
 
   Widget _showMapCall() {
     return Expanded(
-      flex: 2,
+        flex: 2,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.end,

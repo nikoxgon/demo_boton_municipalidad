@@ -51,15 +51,31 @@ class DirectionProvider extends ChangeNotifier {
   }
 
   getDistance(Location origen, Location destino) {
-    directionsApi.directionsWithLocation(
+    directionsApi
+        .directionsWithLocation(
       origen,
       destino,
       travelMode: TravelMode.driving,
-    ).then((onValue) {
+    )
+        .then((onValue) {
       var _distance = onValue.routes.first.legs.first.distance.value;
       return _distance;
     });
-
   }
-  
+
+  getPatrullaDistance(Location origen, Location destino) {
+    directionsApi
+        .directionsWithLocation(
+      origen,
+      destino,
+      travelMode: TravelMode.driving,
+    )
+        .then((DirectionsResponse onValue) {
+      var rowDistance = {
+        'distancia': onValue.routes.first.legs.first.distance,
+        'latlng': onValue.routes.first.legs.first.startLocation
+      };
+      return rowDistance;
+    });
+  }
 }
