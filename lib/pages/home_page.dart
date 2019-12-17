@@ -162,7 +162,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     'latLng': GeoPoint(onValue.latitude, onValue.longitude),
                     'lat': onValue.latitude,
                     'lng': onValue.longitude,
-                    'estado': 'Pendiente',
+                    'estado': 'Creada',
                     'userId': user
                   };
                   SnackBar(content: Text('Ingresado con exito.'));

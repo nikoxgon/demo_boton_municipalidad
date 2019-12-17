@@ -22,10 +22,10 @@ class MapPage extends StatefulWidget {
 class _MapPageState extends State<MapPage> {
   maps.GoogleMapController _mapController;
   // CENTER VIEW POINTS
-  double center_left;
-  double center_top;
-  double center_right;
-  double center_bottom;
+  double centerleft;
+  double centertop;
+  double centerright;
+  double centerbottom;
   // END CENTER VIEW POINTS
 
   @override
@@ -90,18 +90,18 @@ class _MapPageState extends State<MapPage> {
 
   _centerView() async {
     await _mapController.getVisibleRegion().then((onValue) {
-      if (center_bottom == null) {
+      if (centerbottom == null) {
         var api = Provider.of<DirectionProvider>(context);
         api.findDirections(_getInitialCamera, widget.toPoint);
       }
-      center_left = min(widget.data['lat'], widget.toPoint.latitude);
-      center_right = max(widget.data['lat'], widget.toPoint.latitude);
-      center_top = max(widget.data['lng'], widget.toPoint.longitude);
-      center_bottom = min(widget.data['lng'], widget.toPoint.longitude);
+      centerleft = min(widget.data['lat'], widget.toPoint.latitude);
+      centerright = max(widget.data['lat'], widget.toPoint.latitude);
+      centertop = max(widget.data['lng'], widget.toPoint.longitude);
+      centerbottom = min(widget.data['lng'], widget.toPoint.longitude);
 
       var bounds = maps.LatLngBounds(
-        southwest: maps.LatLng(center_left, center_bottom),
-        northeast: maps.LatLng(center_right, center_top),
+        southwest: maps.LatLng(centerleft, centerbottom),
+        northeast: maps.LatLng(centerright, centertop),
       );
       var cameraUpdate = maps.CameraUpdate.newLatLngBounds(bounds, 50);
       _mapController.animateCamera(cameraUpdate);

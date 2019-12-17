@@ -79,6 +79,7 @@ class _SelectionPageState extends State<SelectionPage> {
     widget.data['timestamp'] = FieldValue.serverTimestamp();
     
     Firestore.instance.collection('avisos').add(widget.data).then((onValue) {
+      widget.data['documentID'] = onValue.documentID;
       Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (BuildContext context) => PendientePage(
                 data: widget.data,

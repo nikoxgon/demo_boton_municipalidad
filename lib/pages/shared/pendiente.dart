@@ -4,12 +4,14 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_webservice/directions.dart';
 import 'package:provider/provider.dart';
 import 'package:seam/providers/DirectionsProvider.dart';
+import 'package:seam/services/authentication.dart';
 
 import 'map.dart';
 
 class PendientePage extends StatefulWidget {
-  PendientePage({Key key, this.data}) : super(key: key);
+  PendientePage({Key key, this.data, this.auth}) : super(key: key);
 
+  final BaseAuth auth;
   final Map<String, dynamic> data;
   @override
   State<StatefulWidget> createState() => new _PendientePageState();
@@ -54,10 +56,10 @@ class _PendientePageState extends State<PendientePage> {
               ),
             ),
             SizedBox(
-                width: 150,
-                height: 150,
+                width: 100,
+                height: 100,
                 child: CircularProgressIndicator(
-                  strokeWidth: 5,
+                  strokeWidth: 3,
                   valueColor: new AlwaysStoppedAnimation<Color>(Colors.red),
                 )),
             Text(
@@ -65,6 +67,11 @@ class _PendientePageState extends State<PendientePage> {
               textAlign: TextAlign.center,
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
+            SizedBox(
+              height: 150,
+              width: double.maxFinite,
+              child: _ListPatrullasDistancia(),
+            )
           ]),
     );
   }
@@ -77,13 +84,40 @@ class _PendientePageState extends State<PendientePage> {
   }
 
   _searchPatrullas() {
+    print(widget.data['documentID']);
+    var documentID = widget.data['documentID'];
     var fs = Firestore.instance;
     var origen = Location(widget.data['lat'], widget.data['lng']);
     var patrullas = fs
         .collection('patrullas')
         .where('estado', isEqualTo: 'activo')
         .snapshots();
-    
+    patrullas.asyncMap((convert) {
+      print(convert);
+    });
+  }
+
+  _ListPatrullasDistancia() {
+    var api = Provider.of<DirectionProvider>(context);
+    var destino = Location(widget.data['lat'], widget.data['lng']);
+    var patrullas = api.getPatrullaDistance(destino, widget.data['documentID']);
+    return StreamBuilder<QuerySnapshot>(
+      stream: Firestore.instance
+          .collection('patrullas')
+          .where('estado', isEqualTo: 'activo')
+          .snapshots(),
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (!snapshot.hasData) return new Text('Loading...');
+        return new ListView(
+          children: snapshot.data.documents.map((document) {
+            return new ListTile(
+              title: new Text(document['lat']),
+              subtitle: new Text(document['lng']),
+            );
+          }).toList(),
+        );
+      },
+    );
   }
 
   _getPatrullaSeleccionada(origen, patrullas) {
@@ -91,22 +125,21 @@ class _PendientePageState extends State<PendientePage> {
     patrullas.then((onValue) {
       String patrullaId;
       int patrullaDistancia = 0;
-      onValue.documents
-        .forEach((values) async {
-          var destino = Location(values.data['lat'], values.data['lng']);
-          int distancia = await api.getDistance(origen, destino);
-          print(values.documentID);
-          print(distancia);
-          if (patrullaDistancia == 0) {
+      onValue.documents.forEach((values) async {
+        var destino = Location(values.data['lat'], values.data['lng']);
+        int distancia = await api.getDistance(origen, destino);
+        print(values.documentID);
+        print(distancia);
+        if (patrullaDistancia == 0) {
+          patrullaId = values.documentID;
+          patrullaDistancia = distancia;
+        } else {
+          if (distancia < patrullaDistancia) {
             patrullaId = values.documentID;
             patrullaDistancia = distancia;
-          } else {
-            if (distancia < patrullaDistancia) {
-              patrullaId = values.documentID;
-              patrullaDistancia = distancia;
-            }
           }
-        });
+        }
+      });
       print(patrullaId);
       this.message = 'ESPERANDO CONFIRMACION...';
     }).catchError((onError) {

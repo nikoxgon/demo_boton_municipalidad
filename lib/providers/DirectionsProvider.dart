@@ -1,8 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as maps;
 import 'package:google_maps_webservice/directions.dart';
+import 'package:seam/services/authentication.dart';
 
 class DirectionProvider extends ChangeNotifier {
+  BaseAuth auth;
   GoogleMapsDirections directionsApi =
       GoogleMapsDirections(apiKey: 'AIzaSyARNazLGuM9cfrvzhU2LUvCXFD2KtlMUKQ');
 
@@ -63,19 +67,48 @@ class DirectionProvider extends ChangeNotifier {
     });
   }
 
-  getPatrullaDistance(Location origen, Location destino) {
-    directionsApi
-        .directionsWithLocation(
-      origen,
-      destino,
-      travelMode: TravelMode.driving,
-    )
-        .then((DirectionsResponse onValue) {
-      var rowDistance = {
-        'distancia': onValue.routes.first.legs.first.distance,
-        'latlng': onValue.routes.first.legs.first.startLocation
-      };
-      return rowDistance;
+  getPatrullaDistance(destino, avisoID) {
+    var fs = Firestore.instance;
+    var patrullas = fs
+        .collection('patrullas')
+        .where('estado', isEqualTo: 'activo')
+        .snapshots();
+    patrullas.listen((data) {
+      data.documents.forEach((doc) {
+        Location origen =
+            Location(double.parse(doc['lat']), double.parse(doc['lng']));
+        directionsApi
+            .directionsWithLocation(
+          origen,
+          destino,
+          travelMode: TravelMode.driving,
+        )
+            .then((DirectionsResponse onValue) async {
+          fs
+              .collection('avisos')
+              .document(avisoID)
+              .collection('patrullas')
+              .add({
+            'patrullaID': doc.documentID,
+            'distancia': onValue.routes.first.legs.first.distance.value,
+            'lat': onValue.routes.first.legs.first.startLocation.lat,
+            'lng': onValue.routes.first.legs.first.startLocation.lng
+          });
+          fs.collection('patrullas').document(doc.documentID).setData({
+            'avisoID': avisoID,
+            'estado': 'pendiente'
+          }, merge: true);
+        });
+      });
     });
+  }
+
+  _getUser() async {
+    try {
+      var _authUser = await FirebaseAuth.instance.currentUser();
+      print(_authUser.email);
+    } catch (e) {
+      print(e);
+    }
   }
 }
