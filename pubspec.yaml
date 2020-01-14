@@ -25,14 +25,15 @@ dependencies:
   cupertino_icons: ^0.1.3
 
   # DEPENDENCIA QUE PERMITE UTILIZAR EL CAMBIO DE RUTA 
-  provider: ^3.2.0
+  provider: ^4.0.1
+  location: ^2.3.5
 
   # DEPENDENCIAS DE GOOGLE MAPS -> VISUALIZACION Y ROUTING
   google_maps_flutter: ^0.5.21+15
   google_maps_webservice: ^0.0.16
 
   # AUTENTIFICACION DE FIREBASE
-  firebase_auth: ^0.15.2
+  firebase_auth: ^0.15.3+1
 
   # BASE DE DATOS FIRESTORE
   cloud_firestore: ^0.13.0+1
@@ -45,7 +46,7 @@ dependencies:
   # FONT AWESOME 
   font_awesome_flutter: ^8.5.0
   # GEOLOCALIZACION
-  geolocator: ^5.1.5
+  geolocator: ^5.2.0
   # INVOCADOR DE APPS
   url_launcher: ^5.4.1
 

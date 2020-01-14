@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_webservice/directions.dart';
 import 'package:provider/provider.dart';
+import 'package:seam/pages/shared/showMap.dart';
 import 'package:seam/providers/DirectionsProvider.dart';
 import 'package:seam/services/authentication.dart';
 
@@ -78,7 +79,7 @@ class _PendientePageState extends State<PendientePage> {
 
   void _showMap() {
     Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (BuildContext context) => MapPage(
+        builder: (BuildContext context) => MapaPage(
               data: widget.data,
             )));
   }
