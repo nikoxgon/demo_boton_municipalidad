@@ -241,19 +241,10 @@ class _MapaPageState extends State<MapaPage> {
 ]
           """;
                 controller.setMapStyle(_mapStyle);
-                _controller = controller;
-                initMemoryClustering();
                 _controller.complete(controller);
-                controller.setMapStyle();
+                sendRequest();
               },
             ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          sendRequest();
-        },
-        label: Text('Destination'),
-        icon: Icon(Icons.directions_boat),
-      ),
     );
   }
 
