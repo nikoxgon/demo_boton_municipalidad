@@ -19,7 +19,6 @@ class MapaPage extends StatefulWidget {
 }
 
 class _MapaPageState extends State<MapaPage> {
-
   bool loading = true;
   final Set<Marker> _markers = {};
   final Set<Polyline> _polyLines = {};
@@ -29,40 +28,227 @@ class _MapaPageState extends State<MapaPage> {
   static LatLng latLng;
   LocationData currentLocation;
 
-
   @override
-  void initState(){
+  void initState() {
     getLocation();
     loading = true;
     super.initState();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-
-      body:
-      loading
-          ?
-      Container(color: Colors.red,)
-          :
-      GoogleMap(
-        polylines: polyLines,
-        markers: _markers,
-        mapType: MapType.normal,
-        initialCameraPosition: CameraPosition(
-          target: latLng,
-          zoom: 14.4746,
-        ),
-        onCameraMove:  onCameraMove,
-        onMapCreated: (GoogleMapController controller) {
-          _controller.complete(controller);
-        },
-      ),
-
+      body: loading
+          ? Container(
+              color: Colors.red,
+            )
+          : GoogleMap(
+              polylines: polyLines,
+              markers: _markers,
+              mapType: MapType.normal,
+              initialCameraPosition: CameraPosition(
+                target: latLng,
+                zoom: 14.4746,
+              ),
+              onCameraMove: onCameraMove,
+              onMapCreated: (GoogleMapController controller) {
+                const _mapStyle = """
+          [
+  {
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#212121"
+      }
+    ]
+  },
+  {
+    "elementType": "labels.icon",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#757575"
+      }
+    ]
+  },
+  {
+    "elementType": "labels.text.stroke",
+    "stylers": [
+      {
+        "color": "#212121"
+      }
+    ]
+  },
+  {
+    "featureType": "administrative",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#757575"
+      }
+    ]
+  },
+  {
+    "featureType": "administrative.country",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#9e9e9e"
+      }
+    ]
+  },
+  {
+    "featureType": "administrative.land_parcel",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "featureType": "administrative.locality",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#bdbdbd"
+      }
+    ]
+  },
+  {
+    "featureType": "poi",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#757575"
+      }
+    ]
+  },
+  {
+    "featureType": "poi.park",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#181818"
+      }
+    ]
+  },
+  {
+    "featureType": "poi.park",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#616161"
+      }
+    ]
+  },
+  {
+    "featureType": "poi.park",
+    "elementType": "labels.text.stroke",
+    "stylers": [
+      {
+        "color": "#1b1b1b"
+      }
+    ]
+  },
+  {
+    "featureType": "road",
+    "elementType": "geometry.fill",
+    "stylers": [
+      {
+        "color": "#2c2c2c"
+      }
+    ]
+  },
+  {
+    "featureType": "road",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#8a8a8a"
+      }
+    ]
+  },
+  {
+    "featureType": "road.arterial",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#373737"
+      }
+    ]
+  },
+  {
+    "featureType": "road.highway",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#3c3c3c"
+      }
+    ]
+  },
+  {
+    "featureType": "road.highway.controlled_access",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#4e4e4e"
+      }
+    ]
+  },
+  {
+    "featureType": "road.local",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#616161"
+      }
+    ]
+  },
+  {
+    "featureType": "transit",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#757575"
+      }
+    ]
+  },
+  {
+    "featureType": "water",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#000000"
+      }
+    ]
+  },
+  {
+    "featureType": "water",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#3d3d3d"
+      }
+    ]
+  }
+]
+          """;
+                controller.setMapStyle(_mapStyle);
+                _controller = controller;
+                initMemoryClustering();
+                _controller.complete(controller);
+                controller.setMapStyle();
+              },
+            ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: (){
+        onPressed: () {
           sendRequest();
         },
         label: Text('Destination'),
@@ -71,27 +257,20 @@ class _MapaPageState extends State<MapaPage> {
     );
   }
 
-
   getLocation() async {
-
     var location = new Location();
-    location.onLocationChanged().listen((  currentLocation) {
-
+    location.onLocationChanged().listen((currentLocation) {
       print(currentLocation.latitude);
       print(currentLocation.longitude);
       setState(() {
-
-        latLng =  LatLng(currentLocation.latitude, currentLocation.longitude);
+        latLng = LatLng(currentLocation.latitude, currentLocation.longitude);
       });
 
       print("getLocation:$latLng");
       _onAddMarkerButtonPressed();
       loading = false;
     });
-
   }
-
-
 
   void _onAddMarkerButtonPressed() {
     setState(() {
@@ -102,7 +281,6 @@ class _MapaPageState extends State<MapaPage> {
       ));
     });
   }
-
 
   void onCameraMove(CameraPosition position) {
     latLng = position.target;
@@ -120,10 +298,10 @@ class _MapaPageState extends State<MapaPage> {
 
   void sendRequest() async {
     LatLng destination = LatLng(-34.180663, -70.708399);
-    String route = await _googleMapsServices.getRouteCoordinates(
-        latLng, destination);
+    String route =
+        await _googleMapsServices.getRouteCoordinates(latLng, destination);
     createRoute(route);
-    _addMarker(destination,"KTHM Collage");
+    _addMarker(destination, "KTHM Collage");
   }
 
   void createRoute(String encondedPoly) {
@@ -171,5 +349,4 @@ class _MapaPageState extends State<MapaPage> {
 
     return lList;
   }
-
 }
