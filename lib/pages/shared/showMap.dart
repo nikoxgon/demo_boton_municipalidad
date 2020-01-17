@@ -1,8 +1,13 @@
 import 'dart:async';
+import 'dart:ui' as ui;
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:seam/services/directionsService.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'package:google_maps_flutter/google_maps_flutter.dart' as maps;
 
@@ -23,9 +28,14 @@ class _MapaPageState extends State<MapaPage> {
   final Set<Marker> _markers = {};
   final Set<Polyline> _polyLines = {};
   GoogleMapsServices _googleMapsServices = GoogleMapsServices();
+  GoogleMapsDistanceServices _googleMapsDistanceServices =
+      GoogleMapsDistanceServices();
+  String _distance = "Obteniendo Ubicación...";
+  String _tiempo = "";
   Set<Polyline> get polyLines => _polyLines;
   Completer<GoogleMapController> _controller = Completer();
   static LatLng latLng;
+  double accuracy;
   LocationData currentLocation;
 
   @override
@@ -38,227 +48,76 @@ class _MapaPageState extends State<MapaPage> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      body: loading
-          ? Container(
-              color: Colors.red,
-            )
-          : GoogleMap(
-              polylines: polyLines,
-              markers: _markers,
-              mapType: MapType.normal,
-              initialCameraPosition: CameraPosition(
-                target: latLng,
-                zoom: 14.4746,
+        body: Column(
+      children: <Widget>[
+        Expanded(
+          flex: 8,
+          child: loading
+              ? Container()
+              : GoogleMap(
+                  polylines: polyLines,
+                  markers: _markers,
+                  mapType: MapType.normal,
+                  initialCameraPosition: CameraPosition(
+                    target: latLng,
+                    zoom: 12,
+                  ),
+                  onCameraMove: onCameraMove,
+                  onMapCreated: (GoogleMapController controller) {
+                    _controller.complete(controller);
+                  },
+                ),
+        ),
+        Expanded(
+          flex: 1,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 19, horizontal: 10),
+                child: Column(
+                  children: <Widget>[
+                    Text("Distancia: " + _distance,
+                        style: TextStyle(
+                            fontWeight: FontWeight.w700, fontSize: 18)),
+                    Text("Tiempo estimado: " + _tiempo,
+                        style: TextStyle(
+                            fontWeight: FontWeight.w700, fontSize: 18))
+                  ],
+                ),
               ),
-              onCameraMove: onCameraMove,
-              onMapCreated: (GoogleMapController controller) {
-                const _mapStyle = """
-          [
-  {
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#212121"
-      }
-    ]
-  },
-  {
-    "elementType": "labels.icon",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#757575"
-      }
-    ]
-  },
-  {
-    "elementType": "labels.text.stroke",
-    "stylers": [
-      {
-        "color": "#212121"
-      }
-    ]
-  },
-  {
-    "featureType": "administrative",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#757575"
-      }
-    ]
-  },
-  {
-    "featureType": "administrative.country",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#9e9e9e"
-      }
-    ]
-  },
-  {
-    "featureType": "administrative.land_parcel",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "administrative.locality",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#bdbdbd"
-      }
-    ]
-  },
-  {
-    "featureType": "poi",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#757575"
-      }
-    ]
-  },
-  {
-    "featureType": "poi.park",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#181818"
-      }
-    ]
-  },
-  {
-    "featureType": "poi.park",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#616161"
-      }
-    ]
-  },
-  {
-    "featureType": "poi.park",
-    "elementType": "labels.text.stroke",
-    "stylers": [
-      {
-        "color": "#1b1b1b"
-      }
-    ]
-  },
-  {
-    "featureType": "road",
-    "elementType": "geometry.fill",
-    "stylers": [
-      {
-        "color": "#2c2c2c"
-      }
-    ]
-  },
-  {
-    "featureType": "road",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#8a8a8a"
-      }
-    ]
-  },
-  {
-    "featureType": "road.arterial",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#373737"
-      }
-    ]
-  },
-  {
-    "featureType": "road.highway",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#3c3c3c"
-      }
-    ]
-  },
-  {
-    "featureType": "road.highway.controlled_access",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#4e4e4e"
-      }
-    ]
-  },
-  {
-    "featureType": "road.local",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#616161"
-      }
-    ]
-  },
-  {
-    "featureType": "transit",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#757575"
-      }
-    ]
-  },
-  {
-    "featureType": "water",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#000000"
-      }
-    ]
-  },
-  {
-    "featureType": "water",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#3d3d3d"
-      }
-    ]
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 15, horizontal: 30),
+                child: FloatingActionButton(
+                  onPressed: () {
+                    call('+56964953030');
+                  },
+                  child: Icon(Icons.call),
+                  backgroundColor: Colors.green,
+                  tooltip: 'Llamar Patrulla',
+                ),
+              )
+            ],
+          ),
+        )
+      ],
+    ));
   }
-]
-          """;
-                controller.setMapStyle(_mapStyle);
-                _controller.complete(controller);
-                sendRequest();
-              },
-            ),
-    );
-  }
+
+  void call(String number) => launch("tel:$number");
 
   getLocation() async {
     var location = new Location();
     location.onLocationChanged().listen((currentLocation) {
-      print(currentLocation.latitude);
-      print(currentLocation.longitude);
       setState(() {
         latLng = LatLng(currentLocation.latitude, currentLocation.longitude);
+        accuracy = currentLocation.accuracy;
       });
+      sendRequest();
 
-      print("getLocation:$latLng");
-      _onAddMarkerButtonPressed();
+      // print("getLocation:$latLng");
+      // _onAddMarkerButtonPressed();
       loading = false;
     });
   }
@@ -268,7 +127,7 @@ class _MapaPageState extends State<MapaPage> {
       _markers.add(Marker(
         markerId: MarkerId("111"),
         position: latLng,
-        icon: BitmapDescriptor.defaultMarker,
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
       ));
     });
   }
@@ -289,13 +148,23 @@ class _MapaPageState extends State<MapaPage> {
 
   void sendRequest() async {
     LatLng destination = LatLng(-34.180663, -70.708399);
-    String route =
+    Map<String, dynamic> _data =
         await _googleMapsServices.getRouteCoordinates(latLng, destination);
-    createRoute(route);
+    Firestore.instance
+        .collection('avisos')
+        .document(widget.data["documentID"])
+        .updateData({"lat": latLng.latitude, "lng": latLng.longitude});
+    // "latLng": new GeoPoint(latLng.latitude, latLng.longitude)
+    _distance = _data["distancia"];
+    _tiempo = _data["tiempo"];
+    print(widget.data["documentID"]);
+
+    createRoute(_data["ruta"]);
     _addMarker(destination, "KTHM Collage");
   }
 
   void createRoute(String encondedPoly) {
+    _polyLines.clear();
     _polyLines.add(Polyline(
         polylineId: PolylineId(latLng.toString()),
         width: 4,
@@ -303,12 +172,31 @@ class _MapaPageState extends State<MapaPage> {
         color: Colors.red));
   }
 
-  void _addMarker(LatLng location, String address) {
+  Future<void> _addMarker(LatLng location, String address) async {
+    _markers.clear();
+    final Uint8List markerIconPerson =
+        await getBytesFromAsset('assets/markers/person.png', 100);
+    final Uint8List markerIcon =
+        await getBytesFromAsset('assets/markers/car.png', 100);
+    _markers.add(Marker(
+        markerId: MarkerId("111"),
+        position: latLng,
+        icon: BitmapDescriptor.fromBytes(markerIcon)));
     _markers.add(Marker(
         markerId: MarkerId("112"),
         position: location,
         infoWindow: InfoWindow(title: address, snippet: "go here"),
-        icon: BitmapDescriptor.defaultMarker));
+        icon: BitmapDescriptor.fromBytes(markerIconPerson)));
+  }
+
+  Future<Uint8List> getBytesFromAsset(String path, int width) async {
+    ByteData data = await rootBundle.load(path);
+    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
+        targetWidth: width);
+    ui.FrameInfo fi = await codec.getNextFrame();
+    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))
+        .buffer
+        .asUint8List();
   }
 
   List _decodePoly(String poly) {
@@ -336,7 +224,7 @@ class _MapaPageState extends State<MapaPage> {
 
     for (var i = 2; i < lList.length; i++) lList[i] += lList[i - 2];
 
-    print(lList.toString());
+    // print(lList.toString());
 
     return lList;
   }
