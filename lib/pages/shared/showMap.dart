@@ -157,7 +157,7 @@ class _MapaPageState extends State<MapaPage> {
     // "latLng": new GeoPoint(latLng.latitude, latLng.longitude)
     _distance = _data["distancia"];
     _tiempo = _data["tiempo"];
-    print(widget.data["documentID"]);
+    // print(widget.data["documentID"]);
 
     createRoute(_data["ruta"]);
     _addMarker(destination, "KTHM Collage");

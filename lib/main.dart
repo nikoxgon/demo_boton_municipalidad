@@ -13,10 +13,7 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-        create: (_) => new DirectionProvider(),
-        lazy: true,
-        child: MaterialApp(
-            debugShowCheckedModeBanner: false, home: RootPage(auth: Auth())));
+    return MaterialApp(
+        debugShowCheckedModeBanner: false, home: RootPage(auth: Auth()));
   }
 }

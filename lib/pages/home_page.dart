@@ -33,9 +33,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   Text text;
 
-  //double lng = 0;
-  //double lat = 0;
-
   @override
   void initState() {
     super.initState();
@@ -123,7 +120,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       await widget.auth.signOut();
       widget.onSignedOut();
     } catch (e) {
-      print(e);
+      // print(e);
     }
   }
 
@@ -188,6 +185,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   Widget _showButtonTextAlarm() {
+    // widget.auth.getCurrentUser().then((onValue) {
+    //   print(onValue.uid);
+    // });
     if (!sendAlert) {
       return Padding(
         padding: EdgeInsets.symmetric(vertical: 30, horizontal: 10),

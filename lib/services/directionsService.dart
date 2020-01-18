@@ -23,12 +23,13 @@ class GoogleMapsServices {
 }
 
 class GoogleMapsDistanceServices {
-  Future<String> getRouteDistance(LatLng l1, LatLng l2) async {
+  Future<int> getRouteDistance(LatLng l1, LatLng l2) async {
     String url =
         "https://maps.googleapis.com/maps/api/distancematrix/json?origins=${l1.latitude},${l1.longitude}&destinations=${l2.latitude},${l2.longitude}&key=$apiKey";
     http.Response response = await http.get(url);
     Map values = jsonDecode(response.body);
     // print(values);
-    return values["rows"][0]["elements"][0]["distance"]["text"];
+    int data = values["rows"][0]["elements"][0]["distance"]["value"];
+    return data;
   }
 }
