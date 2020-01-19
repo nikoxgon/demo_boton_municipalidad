@@ -19,25 +19,49 @@ class _PendientePageState extends State<PendientePage> {
   GoogleMapsDistanceServices _googleMapsDistanceServices =
       GoogleMapsDistanceServices();
   String message = 'BUSCANDO PATRULLA MAS CERCANA...';
+  bool loading = true;
+  String patrullaID;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchPatrulla();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    _searchPatrulla();
-    return new Scaffold(
-      appBar: new AppBar(
-        title: Image.asset(
-          'assets/images/logo_white.png',
-          height: 45,
-        ),
-        centerTitle: true,
-        backgroundColor: Color.fromRGBO(228, 1, 51, 1),
-      ),
-      body: _showAlarmSendMessage(),
-      floatingActionButton: new FloatingActionButton(
-        onPressed: () => _showMap(),
-        backgroundColor: Colors.green,
-        child: Icon(FontAwesomeIcons.map),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+    return StreamBuilder<DocumentSnapshot>(
+      stream: Firestore.instance
+          .collection("avisos")
+          .document(widget.data["documentID"])
+          .snapshots(),
+      builder:
+          (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+        if (!snapshot.hasData || snapshot.data.data["estado"] == "Creada") {
+          return new Scaffold(
+              appBar: new AppBar(
+                title: Image.asset(
+                  'assets/images/logo_white.png',
+                  height: 45,
+                ),
+                centerTitle: true,
+                backgroundColor: Color.fromRGBO(228, 1, 51, 1),
+              ),
+              body: _showAlarmSendMessage());
+        } else {
+          if (!loading) {
+            return new MapaPage(
+              data: widget.data,
+              patrullaID: patrullaID
+            );
+          }
+        }
+      },
     );
   }
 
@@ -93,39 +117,46 @@ class _PendientePageState extends State<PendientePage> {
         .where("estado", isEqualTo: "activo")
         .getDocuments();
     snapshot.then((action) {
-      action.documents.forEach((f) async {
-        var patrulla = {
-          "id": f.documentID,
-          "lat": double.parse(f.data["lat"]),
-          "lng": double.parse(f.data["lng"]),
-          "correo": f.data["correo"],
-          "distancia": 0
-        };
-        patrulla["distancia"] =
-            await _googleMapsDistanceServices.getRouteDistance(
-                LatLng(
-                    double.parse(f.data["lat"]), double.parse(f.data["lng"])),
-                _latlng);
-        patrullas.add(patrulla);
-      });
-      Future.delayed(Duration(seconds: 2), () {
-        patrullas.forEach((f) {
-          if (seleccionada.length == 0) {
-            seleccionada.add(f);
-          } else {
-            if (seleccionada.first["distancia"] > f["distancia"]) {
-              seleccionada.clear();
+      if (action.documents.isNotEmpty) {
+        action.documents.forEach((f) async {
+          print(f.data["lat"]);
+          var patrulla = {
+            "id": f.documentID,
+            "lat": double.parse(f.data["lat"].toString()),
+            "lng": double.parse(f.data["lng"].toString()),
+            "correo": f.data["correo"],
+            "distancia": 0
+          };
+          patrulla["distancia"] =
+              await _googleMapsDistanceServices.getRouteDistance(
+                  LatLng(double.parse(f.data["lat"].toString()),
+                      double.parse(f.data["lng"].toString())),
+                  _latlng);
+          patrullas.add(patrulla);
+        });
+        Future.delayed(Duration(seconds: 2), () {
+          patrullas.forEach((f) {
+            if (seleccionada.length == 0) {
               seleccionada.add(f);
+            } else {
+              if (seleccionada.first["distancia"] > f["distancia"]) {
+                seleccionada.clear();
+                seleccionada.add(f);
+              }
             }
-          }
-        });
-        print(seleccionada);
-        Firestore.instance.collection("avisos").document(user["id"]).updateData({
-          "patrulla": seleccionada.first["correo"]
-        }).then((onValue){
+          });
+          patrullaID = seleccionada.first["id"];
+          Firestore.instance
+              .collection("avisos")
+              .document(user["id"])
+              .updateData({"patrulla": seleccionada.first["correo"]}).then(
+                  (onValue) {
             message = "PATRULLA ENCONTRADA. ESPERANDO CONFIRMACIÓN...";
-        });
-      });
+            loading = false;
+          });
+        }
+        );
+      }
     });
   }
 }

@@ -15,9 +15,10 @@ class MapaPage extends StatefulWidget {
   // final maps.LatLng fromPoint = maps.LatLng(-34.187387, -70.675984);
   final maps.LatLng toPoint = maps.LatLng(-34.180663, -70.708399);
 
-  MapaPage({Key key, this.data}) : super(key: key);
+  MapaPage({Key key, this.data, this.patrullaID}) : super(key: key);
 
   final Map<String, dynamic> data;
+  final String patrullaID;
 
   @override
   State<StatefulWidget> createState() => new _MapaPageState();
@@ -30,19 +31,25 @@ class _MapaPageState extends State<MapaPage> {
   GoogleMapsServices _googleMapsServices = GoogleMapsServices();
   GoogleMapsDistanceServices _googleMapsDistanceServices =
       GoogleMapsDistanceServices();
-  String _distance = "Obteniendo Ubicación...";
-  String _tiempo = "";
+  String _distance = "...";
+  String _tiempo = "...";
   Set<Polyline> get polyLines => _polyLines;
   Completer<GoogleMapController> _controller = Completer();
   static LatLng latLng;
   double accuracy;
   LocationData currentLocation;
+  Location location = new Location();
 
   @override
   void initState() {
     getLocation();
     loading = true;
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -71,12 +78,13 @@ class _MapaPageState extends State<MapaPage> {
         Expanded(
           flex: 1,
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 19, horizontal: 10),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text("Distancia: " + _distance,
                         style: TextStyle(
@@ -108,17 +116,16 @@ class _MapaPageState extends State<MapaPage> {
   void call(String number) => launch("tel:$number");
 
   getLocation() async {
-    var location = new Location();
     location.onLocationChanged().listen((currentLocation) {
       setState(() {
         latLng = LatLng(currentLocation.latitude, currentLocation.longitude);
-        accuracy = currentLocation.accuracy;
+        Firestore.instance
+            .collection('avisos')
+            .document(widget.data["documentID"])
+            .updateData({"lat": latLng.latitude, "lng": latLng.longitude});
+        sendRequest();
+        loading = false;
       });
-      sendRequest();
-
-      // print("getLocation:$latLng");
-      // _onAddMarkerButtonPressed();
-      loading = false;
     });
   }
 
@@ -147,20 +154,23 @@ class _MapaPageState extends State<MapaPage> {
   }
 
   void sendRequest() async {
-    LatLng destination = LatLng(-34.180663, -70.708399);
-    Map<String, dynamic> _data =
-        await _googleMapsServices.getRouteCoordinates(latLng, destination);
     Firestore.instance
-        .collection('avisos')
-        .document(widget.data["documentID"])
-        .updateData({"lat": latLng.latitude, "lng": latLng.longitude});
-    // "latLng": new GeoPoint(latLng.latitude, latLng.longitude)
-    _distance = _data["distancia"];
-    _tiempo = _data["tiempo"];
-    // print(widget.data["documentID"]);
+        .collection("patrullas")
+        .document(widget.patrullaID)
+        .snapshots()
+        .first
+        .then((onValue) async {
+      LatLng destination = LatLng(onValue.data["lat"], onValue.data["lng"]);
+      Map<String, dynamic> _data =
+          await _googleMapsServices.getRouteCoordinates(latLng, destination);
+      // "latLng": new GeoPoint(latLng.latitude, latLng.longitude)
+      _distance = _data["distancia"];
+      _tiempo = _data["tiempo"];
+      // print(widget.data["documentID"]);
 
-    createRoute(_data["ruta"]);
-    _addMarker(destination, "KTHM Collage");
+      createRoute(_data["ruta"]);
+      _addMarker(destination, "KTHM Collage");
+    });
   }
 
   void createRoute(String encondedPoly) {
@@ -179,14 +189,13 @@ class _MapaPageState extends State<MapaPage> {
     final Uint8List markerIcon =
         await getBytesFromAsset('assets/markers/car.png', 100);
     _markers.add(Marker(
-        markerId: MarkerId("111"),
+        markerId: MarkerId("Yo"),
         position: latLng,
-        icon: BitmapDescriptor.fromBytes(markerIcon)));
-    _markers.add(Marker(
-        markerId: MarkerId("112"),
-        position: location,
-        infoWindow: InfoWindow(title: address, snippet: "go here"),
         icon: BitmapDescriptor.fromBytes(markerIconPerson)));
+    _markers.add(Marker(
+        markerId: MarkerId("Patrulla"),
+        position: location,
+        icon: BitmapDescriptor.fromBytes(markerIcon)));
   }
 
   Future<Uint8List> getBytesFromAsset(String path, int width) async {
