@@ -85,7 +85,6 @@ class _SelectionPageState extends State<SelectionPage> {
                 data: widget.data,
               )));
     }).catchError((onError) {
-      // print(onError);
     });
   }
 }

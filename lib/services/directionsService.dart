@@ -15,9 +15,6 @@ class GoogleMapsServices {
       "distancia": values["routes"][0]["legs"][0]["distance"]["text"],
       "ruta": values["routes"][0]["overview_polyline"]["points"]
     };
-    // print("Tiempo estimado: " + values["routes"][0]["legs"][0]["duration"]["text"]);
-    // print("Distancia: " + values["routes"][0]["legs"][0]["distance"]["text"]);
-    // print(values["routes"][0]["overview_polyline"]["points"]);
     return data;
   }
 }
@@ -28,7 +25,6 @@ class GoogleMapsDistanceServices {
         "https://maps.googleapis.com/maps/api/distancematrix/json?origins=${l1.latitude},${l1.longitude}&destinations=${l2.latitude},${l2.longitude}&key=$apiKey";
     http.Response response = await http.get(url);
     Map values = jsonDecode(response.body);
-    // print(values);
     int data = values["rows"][0]["elements"][0]["distance"]["value"];
     return data;
   }

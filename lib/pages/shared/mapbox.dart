@@ -14,16 +14,10 @@ final GoogleDistanceMatrix distanceMatrix = GoogleDistanceMatrix(
 Future<void> direction() async {
   DirectionsResponse res =
       await directions.directionsWithAddress('Paris, France', 'Rennes, France');
-
-  // print(res.status);
   if (res.isOkay) {
-    // print('${res.routes.length} routes');
     for (var r in res.routes) {
-      // print(r.summary);
-      // print(r.bounds);
     }
   } else {
-    // print(res.errorMessage);
   }
 
   directions.dispose();
@@ -46,18 +40,13 @@ Future<void> distance() async {
   );
 
   try {
-    // print('response ${responseForLocation.status}');
 
     if (responseForLocation.isOkay) {
-      // print(responseForLocation.destinationAddress.length);
       for (var row in responseForLocation.results) {
         for (var element in row.elements) {
-          // print(
-              // 'distance ${element.distance.text} duration ${element.duration.text}');
         }
       }
     } else {
-      // print('ERROR: ${responseForLocation.errorMessage}');
     }
   } finally {
     distanceMatrix.dispose();

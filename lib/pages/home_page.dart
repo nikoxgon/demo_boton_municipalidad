@@ -8,14 +8,16 @@ import 'package:seam/services/authentication.dart';
 import 'package:vibration/vibration.dart';
 
 import './shared/selection.dart';
+import 'shared/showMap.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({Key key, this.auth, this.userId, this.onSignedOut})
+  HomePage({Key key, this.auth, this.userId, this.userEmail, this.onSignedOut})
       : super(key: key);
 
   final BaseAuth auth;
   final VoidCallback onSignedOut;
   final String userId;
+  final String userEmail;
 
   @override
   State<StatefulWidget> createState() => new _HomePageState();
@@ -26,17 +28,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   bool sendAlert = false;
   bool acceptAlert = false;
 
-  Firestore fs;
-
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   bool _isEmailVerified = false;
-
   Text text;
 
   @override
   void initState() {
+    if (!mounted) return;
     super.initState();
-
     _checkEmailVerification();
   }
 
@@ -120,7 +119,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       await widget.auth.signOut();
       widget.onSignedOut();
     } catch (e) {
-      // print(e);
     }
   }
 
@@ -154,13 +152,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 await Geolocator()
                     .getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
                     .then((onValue) async {
-                  DocumentReference user = await Auth().getUserId();
                   var _data = {
                     'latLng': GeoPoint(onValue.latitude, onValue.longitude),
                     'lat': onValue.latitude,
                     'lng': onValue.longitude,
                     'estado': 'Creada',
-                    'userId': user
+                    'userId': widget.userEmail
                   };
                   SnackBar(content: Text('Ingresado con exito.'));
                   Navigator.of(context).pushReplacement(MaterialPageRoute(
@@ -168,12 +165,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             data: _data,
                           )));
                 });
-                // print('-------- CANCELADO 1 -----------');
                 _timer.cancel();
               }
             });
           } else if (!estado && _timer.isActive) {
-            // print('-------- CANCELADO 2 -----------');
             _timer.cancel();
           }
         },
@@ -185,9 +180,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   Widget _showButtonTextAlarm() {
-    // widget.auth.getCurrentUser().then((onValue) {
-    //   print(onValue.uid);
-    // });
     if (!sendAlert) {
       return Padding(
         padding: EdgeInsets.symmetric(vertical: 30, horizontal: 10),
@@ -201,23 +193,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       return null;
     }
   }
-
-  // Widget _selectionButton() {
-  //   return Column(
-  //     crossAxisAlignment: CrossAxisAlignment.center,
-  //     mainAxisAlignment: MainAxisAlignment.center,
-  //     children: <Widget>[
-  //       MaterialButton(
-  //         child: Text('Domicilio'),
-  //         onPressed: () {},
-  //       ),
-  //       MaterialButton(
-  //         child: Text('Calle'),
-  //         onPressed: () {},
-  //       )
-  //     ],
-  //   );
-  // }
 
   Widget _showAlarma() {
     return Container(
@@ -237,6 +212,29 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         ));
   }
 
+  Widget _verificarAviso() {
+    return Container(
+        child: StreamBuilder<QuerySnapshot>(
+            stream: Firestore.instance
+                .collection("avisos")
+                .where("estado", isEqualTo: "Asignada")
+                .where("userId", isEqualTo: widget.userEmail)
+                .snapshots(),
+            builder:
+                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              if (!snapshot.hasData) {
+                return _showAlarma();
+              } else {
+                return new MapaPage(data: {
+                  "documentID":
+                      snapshot.data.documentChanges.first.document.documentID,
+                  "patrullaEmail": snapshot
+                      .data.documentChanges.first.document.data["patrulla"]
+                });
+              }
+            }));
+  }
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -253,7 +251,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               onPressed: _signOut)
         ],
       ),
-      body: _showAlarma(),
+      body: _verificarAviso(),
     );
   }
 }

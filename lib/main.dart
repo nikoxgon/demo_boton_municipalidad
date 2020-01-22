@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'pages/root_page.dart';
-import 'providers/DirectionsProvider.dart';
 import 'services/authentication.dart';
 
 void main() {

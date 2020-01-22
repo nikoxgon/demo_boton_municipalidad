@@ -46,15 +46,11 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
       String userId = "";
       try {
         if (_formMode == FormMode.LOGIN) {
-          // print(_email);
-          // print(_password);
           userId = await widget.auth.signIn(_email, _password);
-          // print('Signed in: $userId');
         } else {
           userId = await widget.auth.signUp(_email, _password);
           widget.auth.sendEmailVerification();
           _showVerifyEmailSentDialog();
-          // print('Signed up user: $userId');
         }
         setState(() {
           _isLoading = false;
@@ -66,7 +62,6 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
           widget.onSignedIn();
         }
       } catch (e) {
-        // print('Error: $e');
         setState(() {
           _isLoading = false;
           if (_isIos) {

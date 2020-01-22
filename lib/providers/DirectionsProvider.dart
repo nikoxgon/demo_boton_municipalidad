@@ -45,12 +45,10 @@ class DirectionProvider extends ChangeNotifier {
       );
       newRoute.add(line);
 
-      // print(line.points);
 
       _route = newRoute;
       notifyListeners();
     } else {
-      // print("ERRROR !!! ${result.status}");
     }
   }
 
@@ -106,9 +104,7 @@ class DirectionProvider extends ChangeNotifier {
   _getUser() async {
     try {
       var _authUser = await FirebaseAuth.instance.currentUser();
-      // print(_authUser.email);
     } catch (e) {
-      // print(e);
     }
   }
 }

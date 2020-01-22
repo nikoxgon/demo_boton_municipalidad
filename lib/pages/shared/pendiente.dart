@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:seam/pages/shared/showMap.dart';
 import 'package:seam/services/authentication.dart';
@@ -24,6 +23,7 @@ class _PendientePageState extends State<PendientePage> {
 
   @override
   void initState() {
+    if (!mounted) return;
     super.initState();
     _searchPatrulla();
   }
@@ -95,13 +95,6 @@ class _PendientePageState extends State<PendientePage> {
     );
   }
 
-  void _showMap() {
-    Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (BuildContext context) => MapaPage(
-              data: widget.data,
-            )));
-  }
-
   void _searchPatrulla() {
     GeoPoint __latlng = widget.data["latLng"];
     LatLng _latlng = LatLng(__latlng.latitude, __latlng.longitude);
@@ -119,7 +112,6 @@ class _PendientePageState extends State<PendientePage> {
     snapshot.then((action) {
       if (action.documents.isNotEmpty) {
         action.documents.forEach((f) async {
-          print(f.data["lat"]);
           var patrulla = {
             "id": f.documentID,
             "lat": double.parse(f.data["lat"].toString()),

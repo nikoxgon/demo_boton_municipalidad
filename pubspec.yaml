@@ -14,7 +14,7 @@ description: A new Flutter project.
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.2.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -71,8 +71,9 @@ flutter:
     - assets/images/logo_independencia.png
     - assets/images/logo_black.png
     - assets/images/logo_white.png
-    - assets/markers/car.png
-    - assets/markers/person.png
+    - assets/markers/pin_person.png
+    - assets/markers/pin_car.png
+    - assets/map/mapstyle.txt
   #  - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

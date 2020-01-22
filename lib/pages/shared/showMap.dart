@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'dart:ui' as ui;
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
@@ -29,22 +30,31 @@ class _MapaPageState extends State<MapaPage> {
   final Set<Marker> _markers = {};
   final Set<Polyline> _polyLines = {};
   GoogleMapsServices _googleMapsServices = GoogleMapsServices();
-  GoogleMapsDistanceServices _googleMapsDistanceServices =
-      GoogleMapsDistanceServices();
   String _distance = "...";
   String _tiempo = "...";
   Set<Polyline> get polyLines => _polyLines;
   Completer<GoogleMapController> _controller = Completer();
-  static LatLng latLng;
+  LatLng latLng;
   double accuracy;
   LocationData currentLocation;
   Location location = new Location();
+  String _mapStyle;
+
+  // CENTER VIEW POINTS
+  maps.GoogleMapController _mapController;
+  double centerleft;
+  double centertop;
+  double centerright;
+  double centerbottom;
+  maps.LatLng destination;
 
   @override
   void initState() {
+    if (!mounted) return;
+    super.initState();
+    getMapStyle();
     getLocation();
     loading = true;
-    super.initState();
   }
 
   @override
@@ -52,125 +62,173 @@ class _MapaPageState extends State<MapaPage> {
     super.dispose();
   }
 
+
+
+  void getMapStyle() {
+    rootBundle.loadString('assets/map/mapstyle.txt').then((string) {
+      _mapStyle = string;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-        body: Column(
+    return Scaffold(
+        body: Stack(
       children: <Widget>[
-        Expanded(
-          flex: 8,
+        Container(
           child: loading
               ? Container()
-              : GoogleMap(
+              : maps.GoogleMap(
                   polylines: polyLines,
                   markers: _markers,
-                  mapType: MapType.normal,
-                  initialCameraPosition: CameraPosition(
+                  compassEnabled: true,
+                  mapToolbarEnabled: true,
+                  mapType: maps.MapType.normal,
+                  initialCameraPosition: maps.CameraPosition(
                     target: latLng,
                     zoom: 12,
                   ),
-                  onCameraMove: onCameraMove,
-                  onMapCreated: (GoogleMapController controller) {
-                    _controller.complete(controller);
+                  onMapCreated: (maps.GoogleMapController controller) {
+                    _mapController = controller;
+                    _mapController.setMapStyle(_mapStyle);
+                    _centerView();
+                    _controller.complete(_mapController);
                   },
                 ),
         ),
-        Expanded(
-          flex: 1,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 19, horizontal: 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text("Distancia: " + _distance,
-                        style: TextStyle(
-                            fontWeight: FontWeight.w700, fontSize: 18)),
-                    Text("Tiempo estimado: " + _tiempo,
-                        style: TextStyle(
-                            fontWeight: FontWeight.w700, fontSize: 18))
-                  ],
+        Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Card(
+              color: Colors.white70,
+              elevation: 8.0,
+              margin: EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0)),
+              child: Container(
+                  child: ListTile(
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                leading: Container(
+                  padding: EdgeInsets.only(right: 12),
+                  decoration: BoxDecoration(
+                      border: Border(
+                          right: BorderSide(width: 1, color: Colors.white24))),
+                  child: Icon(
+                    Icons.directions_car,
+                    color: Color.fromRGBO(228, 1, 51, 1),
+                    size: 40,
+                  ),
                 ),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 15, horizontal: 30),
-                child: FloatingActionButton(
+                title: Text(
+                  "Distancia Restante: " + _distance,
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.black54),
+                ),
+                subtitle: Text(
+                  "Tiempo Estimado: " + _tiempo,
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.black45),
+                ),
+                trailing: FloatingActionButton(
                   onPressed: () {
                     call('+56964953030');
                   },
+                  elevation: 2,
                   child: Icon(Icons.call),
                   backgroundColor: Colors.green,
-                  tooltip: 'Llamar Patrulla',
                 ),
-              )
-            ],
-          ),
-        )
+              )),
+            ))
       ],
     ));
   }
 
   void call(String number) => launch("tel:$number");
 
+  _centerView() async {
+    await _mapController.getVisibleRegion().then((onValue) {
+      centerleft = min(latLng.latitude, destination.latitude);
+      centerright = max(latLng.latitude, destination.latitude);
+      centertop = max(latLng.longitude, destination.longitude);
+      centerbottom = min(latLng.longitude, destination.longitude);
+
+      var bounds = maps.LatLngBounds(
+        southwest: maps.LatLng(centerleft, centerbottom),
+        northeast: maps.LatLng(centerright, centertop),
+      );
+      var cameraUpdate = maps.CameraUpdate.newLatLngBounds(bounds, 120);
+      _mapController.animateCamera(cameraUpdate);
+    });
+  }
+
   getLocation() async {
     location.onLocationChanged().listen((currentLocation) {
       setState(() {
-        latLng = LatLng(currentLocation.latitude, currentLocation.longitude);
-        Firestore.instance
-            .collection('avisos')
-            .document(widget.data["documentID"])
-            .updateData({"lat": latLng.latitude, "lng": latLng.longitude});
-        sendRequest();
-        loading = false;
+        if (!mounted) return;
+        if (latLng ==
+            maps.LatLng(currentLocation.latitude, currentLocation.longitude)) {
+          return;
+        } else {
+          latLng =
+              maps.LatLng(currentLocation.latitude, currentLocation.longitude);
+          Firestore.instance
+              .collection('avisos')
+              .document(widget.data["documentID"])
+              .updateData({"lat": latLng.latitude, "lng": latLng.longitude});
+          sendRequest();
+          loading = false;
+        }
       });
     });
   }
 
-  void _onAddMarkerButtonPressed() {
-    setState(() {
-      _markers.add(Marker(
-        markerId: MarkerId("111"),
-        position: latLng,
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
-      ));
-    });
-  }
-
-  void onCameraMove(CameraPosition position) {
-    latLng = position.target;
-  }
-
-  List<LatLng> _convertToLatLng(List points) {
-    List<LatLng> result = <LatLng>[];
+  List<maps.LatLng> _convertToLatLng(List points) {
+    List<maps.LatLng> result = <maps.LatLng>[];
     for (int i = 0; i < points.length; i++) {
       if (i % 2 != 0) {
-        result.add(LatLng(points[i - 1], points[i]));
+        result.add(maps.LatLng(points[i - 1], points[i]));
       }
     }
     return result;
   }
 
   void sendRequest() async {
-    Firestore.instance
-        .collection("patrullas")
-        .document(widget.patrullaID)
-        .snapshots()
-        .first
-        .then((onValue) async {
-      LatLng destination = LatLng(onValue.data["lat"], onValue.data["lng"]);
-      Map<String, dynamic> _data =
-          await _googleMapsServices.getRouteCoordinates(latLng, destination);
-      // "latLng": new GeoPoint(latLng.latitude, latLng.longitude)
-      _distance = _data["distancia"];
-      _tiempo = _data["tiempo"];
-      // print(widget.data["documentID"]);
-
-      createRoute(_data["ruta"]);
-      _addMarker(destination, "KTHM Collage");
-    });
+    if (widget.patrullaID == null) {
+      Firestore.instance
+          .collection("patrullas")
+          .where("correo", isEqualTo: widget.data["patrullaEmail"].toString())
+          .snapshots()
+          .first
+          .then((onValue) async {
+        destination = maps.LatLng(onValue.documents.first.data["lat"],
+            onValue.documents.first.data["lng"]);
+        Map<String, dynamic> _data =
+            await _googleMapsServices.getRouteCoordinates(latLng, destination);
+        _distance = _data["distancia"];
+        _tiempo = _data["tiempo"];
+        createRoute(_data["ruta"]);
+        _addMarker(destination);
+        _centerView();
+      });
+    } else {
+      Firestore.instance
+          .collection("patrullas")
+          .document(widget.patrullaID)
+          .snapshots()
+          .first
+          .then((onValue) async {
+        destination = maps.LatLng(onValue.data["lat"], onValue.data["lng"]);
+        Map<String, dynamic> _data =
+            await _googleMapsServices.getRouteCoordinates(latLng, destination);
+          _distance = _data["distancia"];
+          _tiempo = _data["tiempo"];
+        createRoute(_data["ruta"]);
+        _addMarker(destination);
+        _centerView();
+      });
+    }
   }
 
   void createRoute(String encondedPoly) {
@@ -179,17 +237,18 @@ class _MapaPageState extends State<MapaPage> {
         polylineId: PolylineId(latLng.toString()),
         width: 4,
         points: _convertToLatLng(_decodePoly(encondedPoly)),
-        color: Colors.red));
+        color: Color.fromRGBO(228, 1, 51, 1),
+        ));
   }
 
-  Future<void> _addMarker(LatLng location, String address) async {
+  Future<void> _addMarker(maps.LatLng location) async {
     _markers.clear();
     final Uint8List markerIconPerson =
-        await getBytesFromAsset('assets/markers/person.png', 100);
+        await getBytesFromAsset('assets/markers/pin_person.png', 120);
     final Uint8List markerIcon =
-        await getBytesFromAsset('assets/markers/car.png', 100);
+        await getBytesFromAsset('assets/markers/pin_car.png', 120);
     _markers.add(Marker(
-        markerId: MarkerId("Yo"),
+        markerId: MarkerId("Usuario"),
         position: latLng,
         icon: BitmapDescriptor.fromBytes(markerIconPerson)));
     _markers.add(Marker(
@@ -232,8 +291,6 @@ class _MapaPageState extends State<MapaPage> {
     } while (index < len);
 
     for (var i = 2; i < lList.length; i++) lList[i] += lList[i - 2];
-
-    // print(lList.toString());
 
     return lList;
   }
