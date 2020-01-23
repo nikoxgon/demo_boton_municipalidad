@@ -36,6 +36,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   void initState() {
     if (!mounted) return;
     super.initState();
+    print(widget.userEmail);
     _checkEmailVerification();
   }
 
@@ -222,7 +223,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 .snapshots(),
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              if (!snapshot.hasData) {
+                  print(snapshot.data.documentChanges.isEmpty);
+              if (!snapshot.hasData || snapshot.data.documentChanges.isEmpty) {
                 return _showAlarma();
               } else {
                 return new MapaPage(data: {

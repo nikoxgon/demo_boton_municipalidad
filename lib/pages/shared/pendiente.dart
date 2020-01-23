@@ -55,10 +55,7 @@ class _PendientePageState extends State<PendientePage> {
               body: _showAlarmSendMessage());
         } else {
           if (!loading) {
-            return new MapaPage(
-              data: widget.data,
-              patrullaID: patrullaID
-            );
+            return new MapaPage(data: widget.data, patrullaID: patrullaID);
           }
         }
       },
@@ -143,11 +140,13 @@ class _PendientePageState extends State<PendientePage> {
               .document(user["id"])
               .updateData({"patrulla": seleccionada.first["correo"]}).then(
                   (onValue) {
-            message = "PATRULLA ENCONTRADA. ESPERANDO CONFIRMACIÓN...";
-            loading = false;
+            setState(() {
+              message = '''PATRULLA ENCONTRADA. 
+              ESPERANDO CONFIRMACIÓN...''';
+              loading = false;
+            });
           });
-        }
-        );
+        });
       }
     });
   }
