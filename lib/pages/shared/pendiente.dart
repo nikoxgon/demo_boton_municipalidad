@@ -53,7 +53,7 @@ class _PendientePageState extends State<PendientePage> {
                 backgroundColor: Color.fromRGBO(228, 1, 51, 1),
               ),
               body: _showAlarmSendMessage());
-        } else {
+        } else  if(snapshot.data.data["estado"] == "Asignada"){
           if (!loading) {
             return new MapaPage(data: widget.data, patrullaID: patrullaID);
           }
@@ -138,11 +138,13 @@ class _PendientePageState extends State<PendientePage> {
           Firestore.instance
               .collection("avisos")
               .document(user["id"])
-              .updateData({"patrulla": seleccionada.first["correo"]}).then(
+              .updateData({
+                "patrulla": seleccionada.first["correo"],
+                "patrulla_id": seleccionada.first["id"]
+              }).then(
                   (onValue) {
             setState(() {
-              message = '''PATRULLA ENCONTRADA. 
-              ESPERANDO CONFIRMACIÓN...''';
+              message = '''PATRULLA ENCONTRADA. ESPERANDO CONFIRMACIÓN...''';
               loading = false;
             });
           });

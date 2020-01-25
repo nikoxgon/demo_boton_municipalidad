@@ -223,15 +223,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 .snapshots(),
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                  print(snapshot.data.documentChanges.isEmpty);
-              if (!snapshot.hasData || snapshot.data.documentChanges.isEmpty) {
+                  print(snapshot.data.documents.isEmpty);
+              if (!snapshot.hasData || snapshot.data.documents.isEmpty) {
                 return _showAlarma();
               } else {
                 return new MapaPage(data: {
                   "documentID":
-                      snapshot.data.documentChanges.first.document.documentID,
+                      snapshot.data.documents.first.documentID,
                   "patrullaEmail": snapshot
-                      .data.documentChanges.first.document.data["patrulla"]
+                      .data.documents.first.data["patrulla"]
                 });
               }
             }));
