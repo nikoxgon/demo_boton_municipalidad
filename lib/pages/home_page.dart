@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'dart:async';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:seam/pages/encuesta.dart';
 import 'package:seam/services/authentication.dart';
 
 import 'package:vibration/vibration.dart';
@@ -31,13 +32,20 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   bool _isEmailVerified = false;
   Text text;
+  Map<String, bool> checkboxValues = {
+    "Muy Buena": true,
+    "Buena": false,
+    "Regular": false,
+    "Mala": false,
+    "Pesima": false
+  };
 
   @override
   void initState() {
     if (!mounted) return;
-    super.initState();
-    print(widget.userEmail);
+    // print(widget.userEmail);
     _checkEmailVerification();
+    super.initState();
   }
 
   void _checkEmailVerification() async {
@@ -119,8 +127,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     try {
       await widget.auth.signOut();
       widget.onSignedOut();
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
   Widget _showButton() {
@@ -153,18 +160,25 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 await Geolocator()
                     .getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
                     .then((onValue) async {
-                  var _data = {
-                    'latLng': GeoPoint(onValue.latitude, onValue.longitude),
-                    'lat': onValue.latitude,
-                    'lng': onValue.longitude,
-                    'estado': 'Creada',
-                    'userId': widget.userEmail
-                  };
-                  SnackBar(content: Text('Ingresado con exito.'));
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (BuildContext context) => SelectionPage(
-                            data: _data,
-                          )));
+                  await Geolocator()
+                      .placemarkFromCoordinates(
+                          onValue.latitude, onValue.longitude)
+                      .then((val) {
+                    // print(val);
+                    var _data = {
+                      'latLng': GeoPoint(onValue.latitude, onValue.longitude),
+                      'lat': onValue.latitude,
+                      'lng': onValue.longitude,
+                      'direccion': val.first.name,
+                      'estado': 'Creado',
+                      'userId': widget.userEmail
+                    };
+                    SnackBar(content: Text('Ingresado con exito.'));
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (BuildContext context) => SelectionPage(
+                              data: _data,
+                            )));
+                  });
                 });
                 _timer.cancel();
               }
@@ -218,21 +232,25 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         child: StreamBuilder<QuerySnapshot>(
             stream: Firestore.instance
                 .collection("avisos")
-                .where("estado", isEqualTo: "Asignada")
+                .where("estado", isEqualTo: "Asignado")
                 .where("userId", isEqualTo: widget.userEmail)
                 .snapshots(),
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                  print(snapshot.data.documents.isEmpty);
+              // print(snapshot.data.documents.isEmpty);
               if (!snapshot.hasData || snapshot.data.documents.isEmpty) {
                 return _showAlarma();
               } else {
-                return new MapaPage(data: {
-                  "documentID":
-                      snapshot.data.documents.first.documentID,
-                  "patrullaEmail": snapshot
-                      .data.documents.first.data["patrulla"]
-                });
+                // print(snapshot.data.documents.first.data);
+                return new MapaPage(
+                    data: {
+                      "documentID": snapshot.data.documents.first.documentID,
+                      "patrullaEmail":
+                          snapshot.data.documents.first.data["patrulla"]
+                    },
+                    patrullaID:
+                        snapshot.data.documents.first.data["patrulla_id"],
+                    avisoID: snapshot.data.documents.first.documentID);
               }
             }));
   }
@@ -242,10 +260,18 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     return new Scaffold(
       appBar: new AppBar(
         centerTitle: true,
-        title: Image.asset(
-          'assets/images/logo_white.png',
-          height: 45,
-        ),
+        title: GestureDetector(
+            onTap: () {
+              Navigator.of(context).push(PageRouteBuilder(
+                fullscreenDialog: true,
+                  opaque: false,
+                  pageBuilder: (BuildContext context, _, __) =>
+                      EncuestaPage()));
+            },
+            child: Image.asset(
+              'assets/images/logo_white.png',
+              height: 45,
+            )),
         backgroundColor: Color.fromRGBO(228, 1, 51, 1),
         actions: <Widget>[
           new FlatButton(

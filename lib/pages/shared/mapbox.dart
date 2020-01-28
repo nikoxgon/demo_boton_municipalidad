@@ -15,7 +15,8 @@ Future<void> direction() async {
   DirectionsResponse res =
       await directions.directionsWithAddress('Paris, France', 'Rennes, France');
   if (res.isOkay) {
-    for (var r in res.routes) {
+    for (Route r in res.routes) {
+      print(r);
     }
   } else {
   }
@@ -43,7 +44,8 @@ Future<void> distance() async {
 
     if (responseForLocation.isOkay) {
       for (var row in responseForLocation.results) {
-        for (var element in row.elements) {
+        for (Element element in row.elements) {
+          print(element);
         }
       }
     } else {

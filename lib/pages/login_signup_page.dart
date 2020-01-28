@@ -80,6 +80,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
     super.initState();
   }
 
+/*
   void _changeFormToSignUp() {
     _formKey.currentState.reset();
     _errorMessage = "";
@@ -87,7 +88,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
       _formMode = FormMode.SIGNUP;
     });
   }
-
+*/
   void _changeFormToLogin() {
     _formKey.currentState.reset();
     _errorMessage = "";
@@ -246,25 +247,6 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
         placeholder: 'Contraseña',
         onChanged: (value) => _password = value.trim(),
       ),
-    );
-  }
-
-  Widget _showSecondaryButton() {
-    return new FlatButton(
-      child: _formMode == FormMode.LOGIN
-          ? new Text('Crear una cuenta',
-              style: new TextStyle(
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.white))
-          : new Text('¿Tienes una cuenta? Inicia sesion',
-              style: new TextStyle(
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.white)),
-      onPressed: _formMode == FormMode.LOGIN
-          ? _changeFormToSignUp
-          : _changeFormToLogin,
     );
   }
 

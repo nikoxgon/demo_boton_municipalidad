@@ -24,8 +24,8 @@ class _PendientePageState extends State<PendientePage> {
   @override
   void initState() {
     if (!mounted) return;
-    super.initState();
     _searchPatrulla();
+    super.initState();
   }
 
   @override
@@ -42,7 +42,7 @@ class _PendientePageState extends State<PendientePage> {
           .snapshots(),
       builder:
           (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-        if (!snapshot.hasData || snapshot.data.data["estado"] == "Creada") {
+        if (!snapshot.hasData || snapshot.data.data["estado"] == "Creado") {
           return new Scaffold(
               appBar: new AppBar(
                 title: Image.asset(
@@ -53,10 +53,18 @@ class _PendientePageState extends State<PendientePage> {
                 backgroundColor: Color.fromRGBO(228, 1, 51, 1),
               ),
               body: _showAlarmSendMessage());
-        } else  if(snapshot.data.data["estado"] == "Asignada"){
+        } else if (snapshot.data.data["estado"] == "Asignado") {
           if (!loading) {
             return new MapaPage(data: widget.data, patrullaID: patrullaID);
+          } else {
+            return new Center(
+              child: CircularProgressIndicator(),
+            );
           }
+        } else {
+          return new Center(
+            child: CircularProgressIndicator(),
+          );
         }
       },
     );
@@ -95,7 +103,7 @@ class _PendientePageState extends State<PendientePage> {
   void _searchPatrulla() {
     GeoPoint __latlng = widget.data["latLng"];
     LatLng _latlng = LatLng(__latlng.latitude, __latlng.longitude);
-    var user = {
+    var aviso = {
       "id": widget.data["documentID"],
       "lat": _latlng.latitude,
       "lng": _latlng.longitude
@@ -137,12 +145,11 @@ class _PendientePageState extends State<PendientePage> {
           patrullaID = seleccionada.first["id"];
           Firestore.instance
               .collection("avisos")
-              .document(user["id"])
+              .document(aviso["id"])
               .updateData({
-                "patrulla": seleccionada.first["correo"],
-                "patrulla_id": seleccionada.first["id"]
-              }).then(
-                  (onValue) {
+            "patrulla": seleccionada.first["correo"],
+            "patrulla_id": seleccionada.first["id"]
+          }).then((onValue) {
             setState(() {
               message = '''PATRULLA ENCONTRADA. ESPERANDO CONFIRMACIÓN...''';
               loading = false;

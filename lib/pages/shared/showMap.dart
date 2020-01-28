@@ -4,8 +4,9 @@ import 'dart:ui' as ui;
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart';
+// import 'package:location/location.dart';
 import 'package:seam/services/directionsService.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -16,10 +17,12 @@ class MapaPage extends StatefulWidget {
   // final maps.LatLng fromPoint = maps.LatLng(-34.187387, -70.675984);
   final maps.LatLng toPoint = maps.LatLng(-34.180663, -70.708399);
 
-  MapaPage({Key key, this.data, this.patrullaID}) : super(key: key);
+  MapaPage({Key key, this.data, this.patrullaID, this.avisoID})
+      : super(key: key);
 
   final Map<String, dynamic> data;
   final String patrullaID;
+  final String avisoID;
 
   @override
   State<StatefulWidget> createState() => new _MapaPageState();
@@ -34,11 +37,9 @@ class _MapaPageState extends State<MapaPage> {
   String _tiempo = "...";
   Set<Polyline> get polyLines => _polyLines;
   Completer<GoogleMapController> _controller = Completer();
-  LatLng latLng;
-  double accuracy;
-  LocationData currentLocation;
-  Location location = new Location();
-  String _mapStyle;
+  // LocationData currentLocation;
+  // Location location = new Location();
+  // String _mapStyle;
 
   // CENTER VIEW POINTS
   maps.GoogleMapController _mapController;
@@ -46,56 +47,67 @@ class _MapaPageState extends State<MapaPage> {
   double centertop;
   double centerright;
   double centerbottom;
-  maps.LatLng destination;
+  maps.LatLng avisoLatlng;
+  maps.LatLng patrullaLatlng;
+
+  StreamSubscription _getPositionSubscription;
+  Geolocator geolocator = new Geolocator();
+  LocationOptions locationOptions = new LocationOptions(
+      accuracy: LocationAccuracy.high,
+      distanceFilter: 10,
+      timeInterval: 5000,
+      forceAndroidLocationManager: true);
 
   @override
   void initState() {
     if (!mounted) return;
     super.initState();
-    getMapStyle();
-    getLocation();
     loading = true;
+    // getMapStyle();
+    getLocation();
   }
 
   @override
   void dispose() {
     super.dispose();
+    _getPositionSubscription?.cancel();
   }
 
-
-
+/*
   void getMapStyle() {
     rootBundle.loadString('assets/map/mapstyle.txt').then((string) {
       _mapStyle = string;
     });
   }
+  */
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: Stack(
       children: <Widget>[
-        Container(
-          child: loading
-              ? Container()
-              : maps.GoogleMap(
+        loading
+            ? Center(
+                child: CircularProgressIndicator(),
+              )
+            : Container(
+                child: maps.GoogleMap(
                   polylines: polyLines,
                   markers: _markers,
                   compassEnabled: true,
                   mapToolbarEnabled: true,
                   mapType: maps.MapType.normal,
                   initialCameraPosition: maps.CameraPosition(
-                    target: latLng,
+                    target: avisoLatlng,
                     zoom: 12,
                   ),
                   onMapCreated: (maps.GoogleMapController controller) {
                     _mapController = controller;
-                    _mapController.setMapStyle(_mapStyle);
-                    _centerView();
+                    // _mapController.setMapStyle(_mapStyle);
                     _controller.complete(_mapController);
                   },
                 ),
-        ),
+              ),
         Positioned(
             bottom: 0,
             left: 0,
@@ -149,10 +161,10 @@ class _MapaPageState extends State<MapaPage> {
 
   _centerView() async {
     await _mapController.getVisibleRegion().then((onValue) {
-      centerleft = min(latLng.latitude, destination.latitude);
-      centerright = max(latLng.latitude, destination.latitude);
-      centertop = max(latLng.longitude, destination.longitude);
-      centerbottom = min(latLng.longitude, destination.longitude);
+      centerleft = min(avisoLatlng.latitude, patrullaLatlng.latitude);
+      centerright = max(avisoLatlng.latitude, patrullaLatlng.latitude);
+      centertop = max(avisoLatlng.longitude, patrullaLatlng.longitude);
+      centerbottom = min(avisoLatlng.longitude, patrullaLatlng.longitude);
 
       var bounds = maps.LatLngBounds(
         southwest: maps.LatLng(centerleft, centerbottom),
@@ -163,7 +175,22 @@ class _MapaPageState extends State<MapaPage> {
     });
   }
 
-  getLocation() async {
+  getLocation() {
+    _getPositionSubscription = geolocator
+        .getPositionStream(locationOptions)
+        .listen((Position position) {
+      setState(() {
+        avisoLatlng = new LatLng(position.latitude, position.longitude);
+        obtenerPatrullalatlngYCalcularruta();
+      });
+      Firestore.instance
+          .collection('avisos')
+          .document(widget.data["documentID"])
+          .updateData(
+              {"lat": avisoLatlng.latitude, "lng": avisoLatlng.longitude});
+     
+    });
+    /*
     location.onLocationChanged().listen((currentLocation) {
       setState(() {
         if (!mounted) return;
@@ -182,6 +209,7 @@ class _MapaPageState extends State<MapaPage> {
         }
       });
     });
+    */
   }
 
   List<maps.LatLng> _convertToLatLng(List points) {
@@ -194,54 +222,39 @@ class _MapaPageState extends State<MapaPage> {
     return result;
   }
 
-  void sendRequest() async {
-    if (widget.patrullaID == null) {
-      Firestore.instance
-          .collection("patrullas")
-          .where("correo", isEqualTo: widget.data["patrullaEmail"].toString())
-          .snapshots()
-          .first
-          .then((onValue) async {
-        destination = maps.LatLng(onValue.documents.first.data["lat"],
-            onValue.documents.first.data["lng"]);
-        Map<String, dynamic> _data =
-            await _googleMapsServices.getRouteCoordinates(latLng, destination);
+  void obtenerPatrullalatlngYCalcularruta() {
+    Firestore.instance
+        .collection("patrullas")
+        .document(widget.patrullaID)
+        .snapshots()
+        .first
+        .then((onValue) async {
+      patrullaLatlng = new maps.LatLng(onValue.data['lat'], onValue.data['lng']);
+      Map<String, dynamic> _data = await _googleMapsServices.getRouteCoordinates(avisoLatlng, patrullaLatlng);
+      if (_controller.isCompleted) {
+        await _centerView();
+        await _addMarker();
+      }
+      setState(() {
         _distance = _data["distancia"];
         _tiempo = _data["tiempo"];
         createRoute(_data["ruta"]);
-        _addMarker(destination);
-        _centerView();
+        loading = false;
       });
-    } else {
-      Firestore.instance
-          .collection("patrullas")
-          .document(widget.patrullaID)
-          .snapshots()
-          .first
-          .then((onValue) async {
-        destination = maps.LatLng(onValue.data["lat"], onValue.data["lng"]);
-        Map<String, dynamic> _data =
-            await _googleMapsServices.getRouteCoordinates(latLng, destination);
-          _distance = _data["distancia"];
-          _tiempo = _data["tiempo"];
-        createRoute(_data["ruta"]);
-        _addMarker(destination);
-        _centerView();
-      });
-    }
+    });
   }
 
   void createRoute(String encondedPoly) {
     _polyLines.clear();
     _polyLines.add(Polyline(
-        polylineId: PolylineId(latLng.toString()),
-        width: 4,
-        points: _convertToLatLng(_decodePoly(encondedPoly)),
-        color: Color.fromRGBO(228, 1, 51, 1),
-        ));
+      polylineId: PolylineId(avisoLatlng.toString()),
+      width: 4,
+      points: _convertToLatLng(_decodePoly(encondedPoly)),
+      color: Color.fromRGBO(228, 1, 51, 1),
+    ));
   }
 
-  Future<void> _addMarker(maps.LatLng location) async {
+  Future<void> _addMarker() async {
     _markers.clear();
     final Uint8List markerIconPerson =
         await getBytesFromAsset('assets/markers/pin_person.png', 120);
@@ -249,11 +262,11 @@ class _MapaPageState extends State<MapaPage> {
         await getBytesFromAsset('assets/markers/pin_car.png', 120);
     _markers.add(Marker(
         markerId: MarkerId("Usuario"),
-        position: latLng,
+        position: avisoLatlng,
         icon: BitmapDescriptor.fromBytes(markerIconPerson)));
     _markers.add(Marker(
         markerId: MarkerId("Patrulla"),
-        position: location,
+        position: patrullaLatlng,
         icon: BitmapDescriptor.fromBytes(markerIcon)));
   }
 

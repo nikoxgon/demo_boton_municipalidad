@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as maps;
 import 'package:google_maps_webservice/directions.dart';
@@ -101,10 +101,12 @@ class DirectionProvider extends ChangeNotifier {
     });
   }
 
+/*
   _getUser() async {
     try {
       var _authUser = await FirebaseAuth.instance.currentUser();
     } catch (e) {
     }
   }
+  */
 }
