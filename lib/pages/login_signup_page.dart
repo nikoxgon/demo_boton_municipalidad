@@ -101,7 +101,8 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
   Widget build(BuildContext context) {
     _isIos = Theme.of(context).platform == TargetPlatform.iOS;
     return new Scaffold(
-        backgroundColor: Color.fromRGBO(211, 52, 69, 1),
+        resizeToAvoidBottomPadding: false,
+        backgroundColor: Theme.of(context).primaryColor,
         // appBar: new AppBar(
         //   title: new Text('Flutter login'),
         // ),
@@ -151,23 +152,40 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
   }
 
   Widget _showBody() {
-    return new Container(
-        padding: EdgeInsets.all(16.0),
-        child: new Form(
-          key: _formKey,
-          child: new ListView(
-            // shrinkWrap: true,
-            children: <Widget>[
-              _showLogo(),
-              _showText(),
-              _showEmailInput(),
-              _showPasswordInput(),
-              _showPrimaryButton(),
-              // _showSecondaryButton(),
-              _showErrorMessage(),
-            ],
+    return new Column(
+      // shrinkWrap: true,
+      children: <Widget>[
+        Container(
+            height: 350,
+            child: Column(
+              children: <Widget>[
+                _showLogo(),
+                _showText(),
+              ],
+            )),
+        Expanded(
+            child: Container(
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(40.0),
+                  topRight: Radius.circular(40.0))),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                _showEmailInput(),
+                _showPasswordInput(),
+                _showPrimaryButton(),
+                // _showSecondaryButton(),
+                _showErrorMessage(),
+              ],
+            ),
           ),
-        ));
+        )),
+      ],
+    );
   }
 
   Widget _showErrorMessage() {
@@ -176,7 +194,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
         _errorMessage,
         style: TextStyle(
             fontSize: 13.0,
-            color: Colors.white,
+            color: Theme.of(context).primaryColor,
             height: 1.0,
             fontWeight: FontWeight.w300),
       );
@@ -189,84 +207,99 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
 
   Widget _showLogo() {
     return new Padding(
-        padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
+        padding: EdgeInsets.only(top: 90.0, bottom: 60.0),
         child: new Image(
           image: AssetImage('assets/images/logo_white.png'),
-          height: 200,
+          height: 80,
         ));
   }
 
   Widget _showText() {
-    return new Text(
-      'EMERGENCIA MUNICIPAL',
-      textAlign: TextAlign.center,
-      style: TextStyle(
-          color: Colors.white70, fontWeight: FontWeight.w700, fontSize: 22),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: new Text(
+        'EMERGENCIA MUNICIPAL',
+        textAlign: TextAlign.center,
+        style: TextStyle(
+            color: Colors.white70, fontWeight: FontWeight.w700, fontSize: 22),
+      ),
     );
   }
 
   Widget _showEmailInput() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(0.0, 60.0, 0.0, 0.0),
-      child: new BeautyTextfield(
-        height: 50,
-        width: double.maxFinite,
-        maxLines: 1,
-        autocorrect: true,
-        autofocus: false,
-        backgroundColor: Color.fromRGBO(211, 52, 69, 1),
-        accentColor: Colors.white,
-        textColor: Colors.black87,
-        wordSpacing: 1,
-        cornerRadius: BorderRadius.circular(50),
-        prefixIcon: new Icon(Icons.mail_outline),
-        placeholder: 'Correo',
-        inputType: TextInputType.emailAddress,
-        onChanged: (value) => _email = value.trim(),
-        // validator: (value) => value.isEmpty ? 'Email can\'t be empty' : null,
-        // onSaved: (value) => _email = value.trim(),
-      ),
-    );
+        padding: const EdgeInsets.only(top: 20.0, left: 40.0, right: 40.0),
+        child: TextField(
+          obscureText: true,
+          onChanged: (value) => _email = value.trim(),
+          decoration: InputDecoration(
+              // border: OutlineInputBorder(), 
+              labelText: 'Correo Electrónico'),
+        )
+        // new BeautyTextfield(
+        //   height: 50,
+        //   width: double.maxFinite,
+        //   maxLines: 1,
+        //   autocorrect: true,
+        //   autofocus: false,
+        //   backgroundColor: Theme.of(context).primaryColor,
+        //   accentColor: Colors.white,
+        //   textColor: Colors.black87,
+        //   wordSpacing: 1,
+        //   cornerRadius: BorderRadius.circular(10),
+        //   prefixIcon: new Icon(Icons.mail_outline),
+        //   placeholder: 'Correo',
+        //   inputType: TextInputType.emailAddress,
+        //   onChanged: (value) => _email = value.trim(),
+        //   // validator: (value) => value.isEmpty ? 'Email can\'t be empty' : null,
+        //   // onSaved: (value) => _email = value.trim(),
+        // ),
+        );
   }
 
   Widget _showPasswordInput() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
-      child: new BeautyTextfield(
-        maxLines: 1,
-        obscureText: true,
-        autofocus: false,
-        height: 50,
-        backgroundColor: Color.fromRGBO(211, 52, 69, 1),
-        accentColor: Colors.white,
-        textColor: Colors.black54,
-        cornerRadius: BorderRadius.circular(50),
-        inputType: TextInputType.visiblePassword,
-        width: double.maxFinite,
-        prefixIcon: new Icon(Icons.lock_outline),
-        placeholder: 'Contraseña',
-        onChanged: (value) => _password = value.trim(),
-      ),
-    );
+        padding: const EdgeInsets.symmetric(horizontal: 40.0),
+        child: TextField(
+          obscureText: true,
+          onChanged: (value) => _password = value.trim(),
+          decoration: InputDecoration(
+              // border: OutlineInputBorder(), 
+              labelText: 'Contraseña'),
+        )
+        // child: new BeautyTextfield(
+        //   maxLines: 1,
+        //   obscureText: true,
+        //   autofocus: false,
+        //   height: 50,
+        //   backgroundColor: Theme.of(context).primaryColor,
+        //   accentColor: Colors.white,
+        //   textColor: Colors.black54,
+        //   cornerRadius: BorderRadius.circular(10),
+        //   inputType: TextInputType.visiblePassword,
+        //   width: double.maxFinite,
+        //   prefixIcon: new Icon(Icons.lock_outline),
+        //   placeholder: 'Contraseña',
+        //   onChanged: (value) => _password = value.trim(),
+        // ),
+        );
   }
 
   Widget _showPrimaryButton() {
     return new Padding(
-        padding: EdgeInsets.fromLTRB(10.0, 40.0, 10.0, 0.0),
+        padding: EdgeInsets.only(top: 20.0, left: 40.0, right: 40.0),
         child: SizedBox(
           height: 50.0,
           width: double.infinity,
           child: new FlatButton(
             shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(50))),
-            color: Colors.white,
+                borderRadius: BorderRadius.all(Radius.circular(8))),
+            color: Theme.of(context).primaryColor,
             child: _formMode == FormMode.LOGIN
-                ? new Text('Iniciar Sesion',
-                    style: new TextStyle(
-                        fontSize: 20.0, color: Color.fromRGBO(211, 52, 69, 1)))
+                ? new Text('Iniciar Sesión',
+                    style: new TextStyle(fontSize: 18.0, color: Colors.white))
                 : new Text('Crear Cuenta',
-                    style: new TextStyle(
-                        fontSize: 20.0, color: Color.fromRGBO(211, 52, 69, 1))),
+                    style: new TextStyle(fontSize: 18.0, color: Colors.white)),
             onPressed: _validateAndSubmit,
           ),
         ));
