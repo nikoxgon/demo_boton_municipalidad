@@ -4,6 +4,7 @@ import 'package:geolocator/geolocator.dart';
 import 'dart:async';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:seam/pages/encuesta.dart';
+import 'package:seam/pages/shared/pendiente.dart';
 import 'package:seam/services/authentication.dart';
 
 import 'package:vibration/vibration.dart';
@@ -39,6 +40,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     "Mala": false,
     "Pesima": false
   };
+
+  int selectedIndex = 0;
 
   @override
   void initState() {
@@ -228,42 +231,62 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   Widget _verificarAviso() {
-    return Container(
-        child: StreamBuilder<QuerySnapshot>(
-            stream: Firestore.instance
-                .collection("avisos")
-                .where("estado", isEqualTo: "Asignado")
-                .where("userId", isEqualTo: widget.userEmail)
-                .snapshots(),
-            builder:
-                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              // print(snapshot.data.documents.isEmpty);
-              if (!snapshot.hasData || snapshot.data.documents.isEmpty) {
-                return _showAlarma();
-              } else {
-                // print(snapshot.data.documents.first.data);
-                return new MapaPage(
-                    data: {
-                      "documentID": snapshot.data.documents.first.documentID,
-                      "patrullaEmail":
-                          snapshot.data.documents.first.data["patrulla"]
-                    },
-                    patrullaID:
-                        snapshot.data.documents.first.data["patrulla_id"],
-                    avisoID: snapshot.data.documents.first.documentID);
-              }
-            }));
+    return Expanded(
+        child: Container(
+      decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(60.0), topRight: Radius.circular(60.0))),
+      child: StreamBuilder<QuerySnapshot>(
+          stream: Firestore.instance
+              .collection("avisos")
+              .where("estado", whereIn: ["Asignado", "Creado"])
+              .where("userId", isEqualTo: widget.userEmail)
+              .snapshots(),
+          builder:
+              (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            // print(snapshot.data.documents.isEmpty);
+            if (!snapshot.hasData || snapshot.data.documents.isEmpty) {
+              return _showAlarma();
+            } else if (snapshot.data.documents.first.data["estado"] ==
+                'Creado') {
+              return PendientePage(data: {
+                "documentID": snapshot.data.documents.first.documentID,
+                "patrullaEmail": snapshot.data.documents.first.data["patrulla"],
+                "latLng": GeoPoint(snapshot.data.documents.first.data["lat"],
+                    snapshot.data.documents.first.data["lng"]),
+                "lat": snapshot.data.documents.first.data["lat"],
+                "lng": snapshot.data.documents.first.data["lng"],
+              });
+            } else if (snapshot.data.documents.first.data["estado"] ==
+                'Asignado') {
+              // print(snapshot.data.documents.first.data);
+              return new MapaPage(
+                  data: {
+                    "documentID": snapshot.data.documents.first.documentID,
+                    "patrullaEmail":
+                        snapshot.data.documents.first.data["patrulla"]
+                  },
+                  patrullaID: snapshot.data.documents.first.data["patrulla_id"],
+                  avisoID: snapshot.data.documents.first.documentID);
+            } else {
+              return Container(height: 0, width: 0);
+            }
+          }),
+    ));
   }
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
+      backgroundColor: Theme.of(context).primaryColor,
       appBar: new AppBar(
+        elevation: 0,
         centerTitle: true,
         title: GestureDetector(
             onTap: () {
               Navigator.of(context).push(PageRouteBuilder(
-                fullscreenDialog: true,
+                  fullscreenDialog: true,
                   opaque: false,
                   pageBuilder: (BuildContext context, _, __) =>
                       EncuestaPage()));
@@ -272,14 +295,21 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               'assets/images/logo_white.png',
               height: 45,
             )),
-        backgroundColor: Color.fromRGBO(228, 1, 51, 1),
+        backgroundColor: Theme.of(context).primaryColor,
         actions: <Widget>[
           new FlatButton(
               child: new Icon(FontAwesomeIcons.signOutAlt, color: Colors.white),
               onPressed: _signOut)
         ],
       ),
-      body: _verificarAviso(),
+      body: Column(
+        children: <Widget>[
+          Container(
+            height: 20.0,
+          ),
+          _verificarAviso(),
+        ],
+      ),
     );
   }
 }

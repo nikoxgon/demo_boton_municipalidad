@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:beauty_textfield/beauty_textfield.dart';
+import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:seam/services/authentication.dart';
 
 class LoginSignUpPage extends StatefulWidget {
@@ -19,6 +20,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
 
   String _email;
   String _password;
+  bool _passwordshow;
   String _errorMessage;
 
   // Initial form is login form
@@ -66,8 +68,15 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
           _isLoading = false;
           if (_isIos) {
             _errorMessage = e.details;
-          } else
-            _errorMessage = e.message;
+          } else {
+            if (e && e.code == 'ERROR_INVALID_EMAIL') {
+              _errorMessage = 'Formato de correo electrónico invalido.';
+            } else if (e && e.code == 'ERROR_WRONG_PASSWORD') {
+              _errorMessage = 'Contraseña incorrecta.';
+            } else {
+              _errorMessage = e.message;
+            }
+          }
         });
       }
     }
@@ -77,6 +86,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
   void initState() {
     _errorMessage = "";
     _isLoading = false;
+    _passwordshow = false;
     super.initState();
   }
 
@@ -101,7 +111,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
   Widget build(BuildContext context) {
     _isIos = Theme.of(context).platform == TargetPlatform.iOS;
     return new Scaffold(
-        resizeToAvoidBottomPadding: false,
+        resizeToAvoidBottomPadding: true,
         backgroundColor: Theme.of(context).primaryColor,
         // appBar: new AppBar(
         //   title: new Text('Flutter login'),
@@ -110,7 +120,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
         body: Stack(
           children: <Widget>[
             _showBody(),
-            _showCircularProgress(),
+            // _showCircularProgress(),
           ],
         ));
   }
@@ -170,19 +180,29 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(40.0),
                   topRight: Radius.circular(40.0))),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                _showEmailInput(),
-                _showPasswordInput(),
-                _showPrimaryButton(),
-                // _showSecondaryButton(),
-                _showErrorMessage(),
-              ],
-            ),
-          ),
+          child: _isLoading
+              ? Center(
+                  child: SizedBox(
+                      height: 200.0,
+                      width: 200.0,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 8.0,
+                        valueColor: AlwaysStoppedAnimation(
+                            Theme.of(context).primaryColor),
+                      )))
+              : Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      _showEmailInput(),
+                      _showPasswordInput(),
+                      _showErrorMessage(),
+                      _showPrimaryButton(),
+                      // _showSecondaryButton(),
+                    ],
+                  ),
+                ),
         )),
       ],
     );
@@ -193,10 +213,10 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
       return new Text(
         _errorMessage,
         style: TextStyle(
-            fontSize: 13.0,
+            fontSize: 16.0,
             color: Theme.of(context).primaryColor,
             height: 1.0,
-            fontWeight: FontWeight.w300),
+            fontWeight: FontWeight.w700),
       );
     } else {
       return new Container(
@@ -230,10 +250,13 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
     return Padding(
         padding: const EdgeInsets.only(top: 20.0, left: 40.0, right: 40.0),
         child: TextField(
-          obscureText: true,
+          keyboardType: TextInputType.emailAddress,
           onChanged: (value) => _email = value.trim(),
           decoration: InputDecoration(
-              // border: OutlineInputBorder(), 
+              prefixIcon: Icon(
+                FontAwesomeIcons.envelope,
+                size: 18.0,
+              ),
               labelText: 'Correo Electrónico'),
         )
         // new BeautyTextfield(
@@ -260,13 +283,28 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
   Widget _showPasswordInput() {
     return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 40.0),
-        child: TextField(
-          obscureText: true,
-          onChanged: (value) => _password = value.trim(),
-          decoration: InputDecoration(
-              // border: OutlineInputBorder(), 
-              labelText: 'Contraseña'),
-        )
+        child: Stack(alignment: Alignment.centerRight, children: <Widget>[
+          TextField(
+              keyboardType: TextInputType.visiblePassword,
+              obscureText: !_passwordshow,
+              onChanged: (value) => _password = value.trim(),
+              decoration: InputDecoration(
+                  labelText: 'Contraseña',
+                  prefixIcon: Icon(FontAwesomeIcons.key, size: 18.0))),
+          IconButton(
+              onPressed: () {
+                setState(() {
+                  _passwordshow = !_passwordshow;
+                });
+              },
+              icon: Icon(
+                _passwordshow
+                    ? FontAwesomeIcons.eyeSlash
+                    : FontAwesomeIcons.eye,
+                size: 18.0,
+                color: Colors.black54,
+              )),
+        ])
         // child: new BeautyTextfield(
         //   maxLines: 1,
         //   obscureText: true,

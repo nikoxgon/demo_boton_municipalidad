@@ -91,7 +91,13 @@ class _MapaPageState extends State<MapaPage> {
                 child: CircularProgressIndicator(),
               )
             : Container(
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(60.0),
+                        topRight: Radius.circular(60.0))),
                 child: maps.GoogleMap(
+                  trafficEnabled: true,
                   polylines: polyLines,
                   markers: _markers,
                   compassEnabled: true,
@@ -104,7 +110,10 @@ class _MapaPageState extends State<MapaPage> {
                   onMapCreated: (maps.GoogleMapController controller) {
                     _mapController = controller;
                     // _mapController.setMapStyle(_mapStyle);
-                    _controller.complete(_mapController);
+                    if(!_controller.isCompleted){
+                      _controller.complete(_mapController);
+                    }
+                    obtenerPatrullalatlngYCalcularruta();
                   },
                 ),
               ),
@@ -188,7 +197,6 @@ class _MapaPageState extends State<MapaPage> {
           .document(widget.data["documentID"])
           .updateData(
               {"lat": avisoLatlng.latitude, "lng": avisoLatlng.longitude});
-     
     });
     /*
     location.onLocationChanged().listen((currentLocation) {
@@ -229,12 +237,14 @@ class _MapaPageState extends State<MapaPage> {
         .snapshots()
         .first
         .then((onValue) async {
-      patrullaLatlng = new maps.LatLng(onValue.data['lat'], onValue.data['lng']);
-      Map<String, dynamic> _data = await _googleMapsServices.getRouteCoordinates(avisoLatlng, patrullaLatlng);
+      patrullaLatlng =
+          new maps.LatLng(onValue.data['lat'], onValue.data['lng']);
+      Map<String, dynamic> _data = await _googleMapsServices
+          .getRouteCoordinates(avisoLatlng, patrullaLatlng);
       if (_controller.isCompleted) {
         await _centerView();
-        await _addMarker();
       }
+      await _addMarker();
       setState(() {
         _distance = _data["distancia"];
         _tiempo = _data["tiempo"];

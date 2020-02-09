@@ -7,13 +7,6 @@ class EncuestaPage extends StatefulWidget {
 }
 
 class _EncuestaPageState extends State<EncuestaPage> {
-  Map<String, bool> _radioValues = {
-    "Muy Buena": true,
-    "Buena": false,
-    "Regular": false,
-    "Mala": false,
-    "Pesima": false
-  };
   int _radioValue = 0;
 
   void changeValue(int value) {

@@ -50,6 +50,7 @@ dependencies:
   # INVOCADOR DE APPS
   url_launcher: 
   fluttertoast: 
+  convex_bottom_navigation:
 
 
 dev_dependencies:
