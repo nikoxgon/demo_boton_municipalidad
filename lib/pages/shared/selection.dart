@@ -1,12 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:seam/pages/shared/appbar.dart';
 
-import '../encuesta.dart';
 import 'pendiente.dart';
 
 class SelectionPage extends StatefulWidget {
-  SelectionPage({Key key, this.data}) : super(key: key);
+  SelectionPage({Key key, this.data, this.onSignedOut}) : super(key: key);
 
+  final VoidCallback onSignedOut;
   final Map<String, dynamic> data;
   @override
   State<StatefulWidget> createState() => new _SelectionPageState();
@@ -17,7 +18,6 @@ class _SelectionPageState extends State<SelectionPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     _seleccionado = false;
     super.initState();
   }
@@ -26,27 +26,10 @@ class _SelectionPageState extends State<SelectionPage> {
   Widget build(BuildContext context) {
     return new Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
-      appBar: new AppBar(
-        elevation: 0,
-        centerTitle: true,
-        title: GestureDetector(
-            onTap: () {
-              Navigator.of(context).push(PageRouteBuilder(
-                  fullscreenDialog: true,
-                  opaque: false,
-                  pageBuilder: (BuildContext context, _, __) =>
-                      EncuestaPage()));
-            },
-            child: Image.asset(
-              'assets/images/logo_white.png',
-              height: 45,
-            )),
-        backgroundColor: Theme.of(context).primaryColor,
-      ),
+      appBar: Appbar(),
       body: _seleccionado
-          ? PendientePage(
-              data: widget.data,
-            )
+          ? new PendientePage(
+              data: widget.data, onSignedOut: widget.onSignedOut)
           : Column(
               children: <Widget>[
                 Container(
@@ -119,6 +102,7 @@ class _SelectionPageState extends State<SelectionPage> {
       widget.data['documentID'] = onValue.documentID;
       setState(() {
         _seleccionado = true;
+        print(_seleccionado);
       });
     }).catchError((onError) {});
   }

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'dart:async';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:seam/pages/encuesta.dart';
+import 'package:seam/pages/shared/appbar.dart';
 import 'package:seam/pages/shared/pendiente.dart';
 import 'package:seam/services/authentication.dart';
 
@@ -179,8 +179,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     SnackBar(content: Text('Ingresado con exito.'));
                     Navigator.of(context).pushReplacement(MaterialPageRoute(
                         builder: (BuildContext context) => SelectionPage(
-                              data: _data,
-                            )));
+                            data: _data, onSignedOut: widget.onSignedOut)));
                   });
                 });
                 _timer.cancel();
@@ -245,32 +244,39 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               .snapshots(),
           builder:
               (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-            // print(snapshot.data.documents.isEmpty);
             if (!snapshot.hasData || snapshot.data.documents.isEmpty) {
               return _showAlarma();
-            } else if (snapshot.data.documents.first.data["estado"] ==
-                'Creado') {
-              return PendientePage(data: {
-                "documentID": snapshot.data.documents.first.documentID,
-                "patrullaEmail": snapshot.data.documents.first.data["patrulla"],
-                "latLng": GeoPoint(snapshot.data.documents.first.data["lat"],
-                    snapshot.data.documents.first.data["lng"]),
-                "lat": snapshot.data.documents.first.data["lat"],
-                "lng": snapshot.data.documents.first.data["lng"],
-              });
-            } else if (snapshot.data.documents.first.data["estado"] ==
-                'Asignado') {
-              // print(snapshot.data.documents.first.data);
-              return new MapaPage(
+            } else {
+              if (snapshot.data.documents.first.data["estado"] == 'Creado') {
+                return PendientePage(
                   data: {
                     "documentID": snapshot.data.documents.first.documentID,
                     "patrullaEmail":
-                        snapshot.data.documents.first.data["patrulla"]
+                        snapshot.data.documents.first.data["patrulla"],
+                    "latLng": GeoPoint(
+                        snapshot.data.documents.first.data["lat"],
+                        snapshot.data.documents.first.data["lng"]),
+                    "lat": snapshot.data.documents.first.data["lat"],
+                    "lng": snapshot.data.documents.first.data["lng"],
                   },
-                  patrullaID: snapshot.data.documents.first.data["patrulla_id"],
-                  avisoID: snapshot.data.documents.first.documentID);
-            } else {
-              return Container(height: 0, width: 0);
+                  auth: widget.auth,
+                  key: widget.key,
+                  onSignedOut: widget.onSignedOut,
+                );
+              } else if (snapshot.data.documents.first.data["estado"] ==
+                  'Asignado') {
+                // print(snapshot.data.documents.first.data);
+                return new MapaPage(
+                    data: {
+                      "documentID": snapshot.data.documents.first.documentID,
+                      "patrullaEmail":
+                          snapshot.data.documents.first.data["patrulla"]
+                    },
+                    key: widget.key,
+                    patrullaID:
+                        snapshot.data.documents.first.data["patrulla_id"],
+                    avisoID: snapshot.data.documents.first.documentID);
+              }
             }
           }),
     ));
@@ -278,38 +284,75 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      backgroundColor: Theme.of(context).primaryColor,
-      appBar: new AppBar(
-        elevation: 0,
-        centerTitle: true,
-        title: GestureDetector(
-            onTap: () {
-              Navigator.of(context).push(PageRouteBuilder(
-                  fullscreenDialog: true,
-                  opaque: false,
-                  pageBuilder: (BuildContext context, _, __) =>
-                      EncuestaPage()));
-            },
-            child: Image.asset(
-              'assets/images/logo_white.png',
-              height: 45,
-            )),
-        backgroundColor: Theme.of(context).primaryColor,
-        actions: <Widget>[
-          new FlatButton(
-              child: new Icon(FontAwesomeIcons.signOutAlt, color: Colors.white),
-              onPressed: _signOut)
-        ],
-      ),
-      body: Column(
-        children: <Widget>[
-          Container(
-            height: 20.0,
-          ),
-          _verificarAviso(),
-        ],
-      ),
-    );
+    return StreamBuilder<QuerySnapshot>(
+        stream: Firestore.instance
+            .collection("avisos")
+            .where("estado", whereIn: ["Asignado", "Creado"])
+            .where("userId", isEqualTo: widget.userEmail)
+            .snapshots(),
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (!snapshot.hasData || snapshot.data.documents.isEmpty) {
+            return new Scaffold(
+              backgroundColor: Theme.of(context).primaryColor,
+              appBar: new AppBar(
+                elevation: 0,
+                centerTitle: true,
+                title: Appbar(),
+                backgroundColor: Theme.of(context).primaryColor,
+                actions: <Widget>[
+                  new FlatButton(
+                      child: new Icon(FontAwesomeIcons.signOutAlt,
+                          color: Colors.white),
+                      onPressed: _signOut)
+                ],
+              ),
+              body: Column(
+                children: <Widget>[
+                  Container(
+                    height: 20.0,
+                  ),
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(60.0),
+                              topRight: Radius.circular(60.0))),
+                      child: _showAlarma(),
+                    ),
+                  )
+                ],
+              ),
+            );
+          } else {
+            if (snapshot.data.documents.first.data["estado"] == 'Asignado') {
+              return MapaPage(
+                  data: {
+                    "documentID": snapshot.data.documents.first.documentID,
+                    "patrullaEmail":
+                        snapshot.data.documents.first.data["patrulla"]
+                  },
+                  key: widget.key,
+                  patrullaID: snapshot.data.documents.first.data["patrulla_id"],
+                  avisoID: snapshot.data.documents.first.documentID);
+            }
+            if (snapshot.data.documents.first.data["estado"] == 'Creado') {
+              return PendientePage(
+                data: {
+                  "documentID": snapshot.data.documents.first.documentID,
+                  "patrullaEmail":
+                      snapshot.data.documents.first.data["patrulla"],
+                  "latLng": GeoPoint(snapshot.data.documents.first.data["lat"],
+                      snapshot.data.documents.first.data["lng"]),
+                  "lat": snapshot.data.documents.first.data["lat"],
+                  "lng": snapshot.data.documents.first.data["lng"],
+                },
+                auth: widget.auth,
+                key: widget.key,
+                onSignedOut: widget.onSignedOut,
+              );
+            }
+          }
+        });
   }
 }

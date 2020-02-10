@@ -2,16 +2,19 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:seam/pages/home_page.dart';
 import 'package:seam/pages/shared/showMap.dart';
 import 'package:seam/services/authentication.dart';
 import 'package:seam/services/directionsService.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class PendientePage extends StatefulWidget {
-  PendientePage({Key key, this.data, this.auth}) : super(key: key);
+  PendientePage({Key key, this.data, this.auth, this.onSignedOut})
+      : super(key: key);
 
   final BaseAuth auth;
   final Map<String, dynamic> data;
+  final VoidCallback onSignedOut;
   @override
   State<StatefulWidget> createState() => new _PendientePageState();
 }
@@ -49,32 +52,42 @@ class _PendientePageState extends State<PendientePage> {
           .snapshots(),
       builder:
           (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-        if (!snapshot.hasData && snapshot.data.data.isEmpty) {
-          return Container(width: 0.0, height: 0.0);
-        } else if (snapshot.data.data["estado"] == "Creado") {
-          _searchPatrulla();
-          return new Scaffold(
-              backgroundColor: Theme.of(context).primaryColor,
-              body: Column(
-                children: <Widget>[
-                  Container(
-                    height: 20.0,
-                  ),
-                  _showAlarmSendMessage(),
-                ],
-              ));
-        } else if (snapshot.data.data["estado"] == "Asignado") {
-          if (!loading) {
-            return new MapaPage(data: widget.data, patrullaID: patrullaID);
-          } else {
-            return new Center(
-              child: CircularProgressIndicator(),
-            );
-          }
+        if (!snapshot.hasData ||
+            snapshot.data.data.isEmpty ||
+            !snapshot.data.exists ||
+            snapshot.data.data['estado'] == 'Terminado') {
+          return HomePage(
+              key: widget.key,
+              auth: widget.auth,
+              onSignedOut: widget.onSignedOut);
         } else {
-          return new Center(
-            child: CircularProgressIndicator(),
-          );
+          if (snapshot.data.data["estado"] == "Creado") {
+            if (snapshot.data.data['patrulla'] == null) {
+              _searchPatrulla();
+            }
+            return new Scaffold(
+                backgroundColor: Theme.of(context).primaryColor,
+                body: Column(
+                  children: <Widget>[
+                    Container(
+                      height: 20.0,
+                    ),
+                    _showAlarmSendMessage(),
+                  ],
+                ));
+          } else if (snapshot.data.data["estado"] == "Asignado") {
+            if (!loading) {
+              return new MapaPage(
+                data: widget.data,
+                patrullaID: patrullaID,
+                key: widget.key,
+              );
+            } else {
+              return new Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+          }
         }
       },
     );
@@ -101,16 +114,16 @@ class _PendientePageState extends State<PendientePage> {
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
                   ),
                 ),
-                nopatrullas ? 
-                Container( height: 0, width: 0)
-                :
-                SizedBox(
-                    width: 150,
-                    height: 150,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 5,
-                      valueColor: new AlwaysStoppedAnimation<Color>(Colors.red),
-                    )),
+                nopatrullas
+                    ? Container(height: 0, width: 0)
+                    : SizedBox(
+                        width: 150,
+                        height: 150,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 5,
+                          valueColor:
+                              new AlwaysStoppedAnimation<Color>(Colors.red),
+                        )),
                 Column(
                   children: <Widget>[
                     Text(
