@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:seam/services/authentication.dart';
 
 import '../encuesta.dart';
 
 class Appbar extends StatelessWidget with PreferredSizeWidget {
+  Appbar({@required this.auth, @required this.onSignedOut});
+  final BaseAuth auth;
+  final VoidCallback onSignedOut;
+
   @override
   Widget build(BuildContext context) {
     return AppBar(
@@ -20,9 +26,21 @@ class Appbar extends StatelessWidget with PreferredSizeWidget {
             height: 45,
           )),
       backgroundColor: Theme.of(context).primaryColor,
+      actions: <Widget>[
+        new FlatButton(
+            child: new Icon(FontAwesomeIcons.signOutAlt, color: Colors.white),
+            onPressed: _signOut)
+      ],
     );
   }
 
   @override
   Size get preferredSize => Size.fromHeight(kToolbarHeight);
+
+  _signOut() async {
+    try {
+      await auth.signOut();
+      onSignedOut();
+    } catch (e) {}
+  }
 }

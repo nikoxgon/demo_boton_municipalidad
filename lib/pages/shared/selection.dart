@@ -1,12 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:seam/pages/shared/appbar.dart';
+import 'package:seam/services/authentication.dart';
 
 import 'pendiente.dart';
 
 class SelectionPage extends StatefulWidget {
-  SelectionPage({Key key, this.data, this.onSignedOut}) : super(key: key);
+  SelectionPage({Key key, this.data, this.onSignedOut, this.auth})
+      : super(key: key);
 
+  final BaseAuth auth;
   final VoidCallback onSignedOut;
   final Map<String, dynamic> data;
   @override
@@ -15,6 +19,7 @@ class SelectionPage extends StatefulWidget {
 
 class _SelectionPageState extends State<SelectionPage> {
   bool _seleccionado = false;
+  static const platform = const MethodChannel('sendSms');
 
   @override
   void initState() {
@@ -24,21 +29,29 @@ class _SelectionPageState extends State<SelectionPage> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      backgroundColor: Theme.of(context).primaryColor,
-      appBar: Appbar(),
-      body: _seleccionado
-          ? new PendientePage(
-              data: widget.data, onSignedOut: widget.onSignedOut)
-          : Column(
-              children: <Widget>[
-                Container(
-                  height: 20.0,
-                ),
-                _selectionButton(),
-              ],
+    if (_seleccionado) {
+      return PendientePage(
+          data: widget.data,
+          onSignedOut: widget.onSignedOut,
+          auth: widget.auth,
+          key: widget.key);
+    } else {
+      return Scaffold(
+        backgroundColor: Theme.of(context).primaryColor,
+        appBar: Appbar(
+          auth: widget.auth,
+          onSignedOut: widget.onSignedOut,
+        ),
+        body: Column(
+          children: <Widget>[
+            Container(
+              height: 20.0,
             ),
-    );
+            _selectionButton(),
+          ],
+        ),
+      );
+    }
   }
 
   Widget _selectionButton() {
@@ -101,9 +114,21 @@ class _SelectionPageState extends State<SelectionPage> {
     Firestore.instance.collection('avisos').add(widget.data).then((onValue) {
       widget.data['documentID'] = onValue.documentID;
       setState(() {
+        sendSms();
         _seleccionado = true;
-        print(_seleccionado);
       });
     }).catchError((onError) {});
   }
+
+
+  Future<Null> sendSms()async {
+    print("SendSMS");
+    try {
+      final String result = await platform.invokeMethod('send',<String,dynamic>{"phone":"+56971072866","msg":"Se ha generado un nuevo procedimiento en SEAM."}); //Replace a 'X' with 10 digit phone number
+      print(result);
+    } on PlatformException catch (e) {
+      print(e.toString());
+    }
+  }
+
 }

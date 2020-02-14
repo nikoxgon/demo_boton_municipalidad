@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:seam/pages/home_page.dart';
+import 'package:seam/pages/shared/appbar.dart';
 import 'package:seam/pages/shared/showMap.dart';
 import 'package:seam/services/authentication.dart';
 import 'package:seam/services/directionsService.dart';
@@ -43,6 +44,41 @@ class _PendientePageState extends State<PendientePage> {
     super.dispose();
   }
 
+  Widget goHomePage() {
+    return HomePage(
+      key: widget.key,
+      auth: widget.auth,
+      onSignedOut: widget.onSignedOut
+    );
+  }
+
+  Widget goMapaPage() {
+    return MapaPage(
+      auth: widget.auth,
+      onSignedOut: widget.onSignedOut,
+      data: widget.data,
+      patrullaID: patrullaID,
+      key: widget.key,
+    );
+  }
+
+  Widget showPendientePage(snapshot){
+    if (snapshot.data.data['patrulla'] == null) {
+      _searchPatrulla();
+    }
+    return new Scaffold(
+        appBar: Appbar(auth: widget.auth, onSignedOut: widget.onSignedOut),
+        backgroundColor: Theme.of(context).primaryColor,
+        body: Column(
+          children: <Widget>[
+            Container(
+              height: 20.0,
+            ),
+            _showAlarmSendMessage(),
+          ],
+        ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<DocumentSnapshot>(
@@ -52,41 +88,19 @@ class _PendientePageState extends State<PendientePage> {
           .snapshots(),
       builder:
           (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-        if (!snapshot.hasData ||
-            snapshot.data.data.isEmpty ||
-            !snapshot.data.exists ||
-            snapshot.data.data['estado'] == 'Terminado') {
-          return HomePage(
-              key: widget.key,
-              auth: widget.auth,
-              onSignedOut: widget.onSignedOut);
+        if (!snapshot.hasData || snapshot.data.data.isEmpty || !snapshot.data.exists || snapshot.data.data['estado'] == 'Terminado') {
+          return goHomePage();
         } else {
           if (snapshot.data.data["estado"] == "Creado") {
-            if (snapshot.data.data['patrulla'] == null) {
-              _searchPatrulla();
-            }
-            return new Scaffold(
-                backgroundColor: Theme.of(context).primaryColor,
-                body: Column(
-                  children: <Widget>[
-                    Container(
-                      height: 20.0,
-                    ),
-                    _showAlarmSendMessage(),
-                  ],
-                ));
+            return showPendientePage(snapshot);
           } else if (snapshot.data.data["estado"] == "Asignado") {
             if (!loading) {
-              return new MapaPage(
-                data: widget.data,
-                patrullaID: patrullaID,
-                key: widget.key,
-              );
+              return goMapaPage();
             } else {
-              return new Center(
-                child: CircularProgressIndicator(),
-              );
+              return goHomePage();
             }
+          } else {
+            return goHomePage();
           }
         }
       },

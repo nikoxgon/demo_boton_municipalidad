@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:seam/pages/shared/appbar.dart';
+import 'package:seam/services/authentication.dart';
 // import 'package:location/location.dart';
 import 'package:seam/services/directionsService.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -17,9 +19,13 @@ class MapaPage extends StatefulWidget {
   // final maps.LatLng fromPoint = maps.LatLng(-34.187387, -70.675984);
   final maps.LatLng toPoint = maps.LatLng(-34.180663, -70.708399);
 
-  MapaPage({Key key, this.data, this.patrullaID, this.avisoID})
+
+
+  MapaPage({Key key, this.data, this.patrullaID, this.avisoID, this.auth, this.onSignedOut})
       : super(key: key);
 
+  final BaseAuth auth;
+  final VoidCallback onSignedOut;
   final Map<String, dynamic> data;
   final String patrullaID;
   final String avisoID;
@@ -61,16 +67,16 @@ class _MapaPageState extends State<MapaPage> {
   @override
   void initState() {
     if (!mounted) return;
-    super.initState();
     loading = true;
     // getMapStyle();
     getLocation();
+    super.initState();
   }
 
   @override
   void dispose() {
-    super.dispose();
     _getPositionSubscription?.cancel();
+    super.dispose();
   }
 
 /*
@@ -84,6 +90,7 @@ class _MapaPageState extends State<MapaPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: Appbar(auth: widget.auth, onSignedOut: widget.onSignedOut),
         body: Stack(
       children: <Widget>[
         loading
