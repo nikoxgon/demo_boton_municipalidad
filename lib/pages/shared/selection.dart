@@ -120,15 +120,17 @@ class _SelectionPageState extends State<SelectionPage> {
     }).catchError((onError) {});
   }
 
-
-  Future<Null> sendSms()async {
+  Future<Null> sendSms() async {
     print("SendSMS");
     try {
-      final String result = await platform.invokeMethod('send',<String,dynamic>{"phone":"+56971072866","msg":"Se ha generado un nuevo procedimiento en SEAM."}); //Replace a 'X' with 10 digit phone number
+      final String result = await platform.invokeMethod(
+          'send', <String, dynamic>{
+        "phone": "+56971072866",
+        "msg": "Se ha generado un nuevo procedimiento en SEAM."
+      }); //Replace a 'X' with 10 digit phone number
       print(result);
     } on PlatformException catch (e) {
       print(e.toString());
     }
   }
-
 }

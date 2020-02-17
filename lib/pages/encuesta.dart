@@ -42,7 +42,9 @@ class _EncuestaPageState extends State<EncuestaPage> {
                   new Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      new Text("Muy Buena", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      new Text("Muy Buena",
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold)),
                       new Radio(
                           value: 5,
                           groupValue: _radioValue,
@@ -52,7 +54,9 @@ class _EncuestaPageState extends State<EncuestaPage> {
                   new Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      new Text("Buena", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      new Text("Buena",
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold)),
                       new Radio(
                           value: 4,
                           groupValue: _radioValue,
@@ -62,7 +66,9 @@ class _EncuestaPageState extends State<EncuestaPage> {
                   new Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      new Text("Regular", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      new Text("Regular",
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold)),
                       new Radio(
                           value: 3,
                           groupValue: _radioValue,
@@ -72,7 +78,9 @@ class _EncuestaPageState extends State<EncuestaPage> {
                   new Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      new Text("Mala", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      new Text("Mala",
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold)),
                       new Radio(
                           value: 2,
                           groupValue: _radioValue,
@@ -82,7 +90,9 @@ class _EncuestaPageState extends State<EncuestaPage> {
                   new Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      new Text("Pesima", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      new Text("Pesima",
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold)),
                       new Radio(
                           value: 1,
                           groupValue: _radioValue,
@@ -113,7 +123,7 @@ class _EncuestaPageState extends State<EncuestaPage> {
                       gravity: ToastGravity.TOP,
                       toastLength: Toast.LENGTH_LONG,
                       fontSize: 18.0);
-                      return;
+                  return;
                 } else {
                   Navigator.pop(context);
                 }

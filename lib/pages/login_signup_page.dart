@@ -124,7 +124,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
           ],
         ));
   }
-  
+
   void _showVerifyEmailSentDialog() {
     showDialog(
       context: context,

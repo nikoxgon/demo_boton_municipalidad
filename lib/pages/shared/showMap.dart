@@ -19,9 +19,13 @@ class MapaPage extends StatefulWidget {
   // final maps.LatLng fromPoint = maps.LatLng(-34.187387, -70.675984);
   final maps.LatLng toPoint = maps.LatLng(-34.180663, -70.708399);
 
-
-
-  MapaPage({Key key, this.data, this.patrullaID, this.avisoID, this.auth, this.onSignedOut})
+  MapaPage(
+      {Key key,
+      this.data,
+      this.patrullaID,
+      this.avisoID,
+      this.auth,
+      this.onSignedOut})
       : super(key: key);
 
   final BaseAuth auth;
@@ -90,87 +94,88 @@ class _MapaPageState extends State<MapaPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: Appbar(auth: widget.auth, onSignedOut: widget.onSignedOut),
+        appBar: Appbar(auth: widget.auth, onSignedOut: widget.onSignedOut),
         body: Stack(
-      children: <Widget>[
-        loading
-            ? Center(
-                child: CircularProgressIndicator(),
-              )
-            : Container(
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(60.0),
-                        topRight: Radius.circular(60.0))),
-                child: maps.GoogleMap(
-                  trafficEnabled: true,
-                  polylines: polyLines,
-                  markers: _markers,
-                  compassEnabled: true,
-                  mapToolbarEnabled: true,
-                  mapType: maps.MapType.normal,
-                  initialCameraPosition: maps.CameraPosition(
-                    target: avisoLatlng,
-                    zoom: 12,
+          children: <Widget>[
+            loading
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : Container(
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(60.0),
+                            topRight: Radius.circular(60.0))),
+                    child: maps.GoogleMap(
+                      trafficEnabled: true,
+                      polylines: polyLines,
+                      markers: _markers,
+                      compassEnabled: true,
+                      mapToolbarEnabled: true,
+                      mapType: maps.MapType.normal,
+                      initialCameraPosition: maps.CameraPosition(
+                        target: avisoLatlng,
+                        zoom: 12,
+                      ),
+                      onMapCreated: (maps.GoogleMapController controller) {
+                        _mapController = controller;
+                        // _mapController.setMapStyle(_mapStyle);
+                        if (!_controller.isCompleted) {
+                          _controller.complete(_mapController);
+                        }
+                        obtenerPatrullalatlngYCalcularruta();
+                      },
+                    ),
                   ),
-                  onMapCreated: (maps.GoogleMapController controller) {
-                    _mapController = controller;
-                    // _mapController.setMapStyle(_mapStyle);
-                    if(!_controller.isCompleted){
-                      _controller.complete(_mapController);
-                    }
-                    obtenerPatrullalatlngYCalcularruta();
-                  },
-                ),
-              ),
-        Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Card(
-              color: Colors.white70,
-              elevation: 8.0,
-              margin: EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0)),
-              child: Container(
-                  child: ListTile(
-                contentPadding:
-                    EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                leading: Container(
-                  padding: EdgeInsets.only(right: 12),
-                  decoration: BoxDecoration(
-                      border: Border(
-                          right: BorderSide(width: 1, color: Colors.white24))),
-                  child: Icon(
-                    Icons.directions_car,
-                    color: Color.fromRGBO(228, 1, 51, 1),
-                    size: 40,
-                  ),
-                ),
-                title: Text(
-                  "Distancia Restante: " + _distance,
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, color: Colors.black54),
-                ),
-                subtitle: Text(
-                  "Tiempo Estimado: " + _tiempo,
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, color: Colors.black45),
-                ),
-                trailing: FloatingActionButton(
-                  onPressed: () {
-                    call('+56964953030');
-                  },
-                  elevation: 2,
-                  child: Icon(Icons.call),
-                  backgroundColor: Colors.green,
-                ),
-              )),
-            ))
-      ],
-    ));
+            Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Card(
+                  color: Colors.white70,
+                  elevation: 8.0,
+                  margin: EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0)),
+                  child: Container(
+                      child: ListTile(
+                    contentPadding:
+                        EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                    leading: Container(
+                      padding: EdgeInsets.only(right: 12),
+                      decoration: BoxDecoration(
+                          border: Border(
+                              right:
+                                  BorderSide(width: 1, color: Colors.white24))),
+                      child: Icon(
+                        Icons.directions_car,
+                        color: Color.fromRGBO(228, 1, 51, 1),
+                        size: 40,
+                      ),
+                    ),
+                    title: Text(
+                      "Distancia Restante: " + _distance,
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.black54),
+                    ),
+                    subtitle: Text(
+                      "Tiempo Estimado: " + _tiempo,
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.black45),
+                    ),
+                    trailing: FloatingActionButton(
+                      onPressed: () {
+                        call('+56964953030');
+                      },
+                      elevation: 2,
+                      child: Icon(Icons.call),
+                      backgroundColor: Colors.green,
+                    ),
+                  )),
+                ))
+          ],
+        ));
   }
 
   void call(String number) => launch("tel:$number");

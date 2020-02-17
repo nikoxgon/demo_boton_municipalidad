@@ -18,8 +18,7 @@ Future<void> direction() async {
     for (Route r in res.routes) {
       print(r);
     }
-  } else {
-  }
+  } else {}
 
   directions.dispose();
 }
@@ -41,15 +40,13 @@ Future<void> distance() async {
   );
 
   try {
-
     if (responseForLocation.isOkay) {
       for (var row in responseForLocation.results) {
         for (Element element in row.elements) {
           print(element);
         }
       }
-    } else {
-    }
+    } else {}
   } finally {
     distanceMatrix.dispose();
   }

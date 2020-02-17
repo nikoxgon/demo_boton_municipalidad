@@ -115,7 +115,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     super.dispose();
   }
 
-
   Widget _showButton() {
     if (!sendAlert) {
       return RawMaterialButton(
@@ -156,9 +155,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     SnackBar(content: Text('Ingresado con exito.'));
                     Navigator.of(context).pushReplacement(MaterialPageRoute(
                         builder: (BuildContext context) => SelectionPage(
-                            data: _data, onSignedOut: widget.onSignedOut, auth: widget.auth
-                        )
-                    ));
+                            data: _data,
+                            onSignedOut: widget.onSignedOut,
+                            auth: widget.auth)));
                   });
                 });
                 _timer.cancel();
@@ -204,22 +203,18 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(60.0),
-                    topRight: Radius.circular(60.0)
-                  )
-              ),
+                      topLeft: Radius.circular(60.0),
+                      topRight: Radius.circular(60.0))),
               child: Container(
-                height: double.maxFinite,
-                width: double.maxFinite,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    _showButton(),
-                    _showButtonTextAlarm()
-                  ].where((children) => children != null).toList(),
-                )
-              ),
+                  height: double.maxFinite,
+                  width: double.maxFinite,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[_showButton(), _showButtonTextAlarm()]
+                        .where((children) => children != null)
+                        .toList(),
+                  )),
             ),
           )
         ],
@@ -265,12 +260,17 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             .where("userId", isEqualTo: widget.userEmail)
             .snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (!snapshot.hasData || snapshot.data.documents.isEmpty || snapshot.data.documentChanges.isEmpty) {
+          if (!snapshot.hasData ||
+              snapshot.data.documents.isEmpty ||
+              snapshot.data.documentChanges.isEmpty) {
             return showHomePage();
           } else {
-            if (snapshot.data.documentChanges.first.document.data["estado"] == 'Asignado') {
+            if (snapshot.data.documentChanges.first.document.data["estado"] ==
+                'Asignado') {
               return goMapaPage(snapshot);
-            } else if (snapshot.data.documentChanges.first.document.data["estado"] == 'Creado') {
+            } else if (snapshot
+                    .data.documentChanges.first.document.data["estado"] ==
+                'Creado') {
               return goPendientePage(snapshot);
             } else {
               return showHomePage();

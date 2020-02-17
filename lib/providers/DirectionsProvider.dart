@@ -45,11 +45,9 @@ class DirectionProvider extends ChangeNotifier {
       );
       newRoute.add(line);
 
-
       _route = newRoute;
       notifyListeners();
-    } else {
-    }
+    } else {}
   }
 
   getDistance(Location origen, Location destino) {
@@ -92,10 +90,9 @@ class DirectionProvider extends ChangeNotifier {
             'lat': onValue.routes.first.legs.first.startLocation.lat,
             'lng': onValue.routes.first.legs.first.startLocation.lng
           });
-          fs.collection('patrullas').document(doc.documentID).setData({
-            'avisoID': avisoID,
-            'estado': 'pendiente'
-          }, merge: true);
+          fs.collection('patrullas').document(doc.documentID).setData(
+              {'avisoID': avisoID, 'estado': 'pendiente'},
+              merge: true);
         });
       });
     });

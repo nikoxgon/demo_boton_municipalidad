@@ -46,10 +46,7 @@ class _PendientePageState extends State<PendientePage> {
 
   Widget goHomePage() {
     return HomePage(
-      key: widget.key,
-      auth: widget.auth,
-      onSignedOut: widget.onSignedOut
-    );
+        key: widget.key, auth: widget.auth, onSignedOut: widget.onSignedOut);
   }
 
   Widget goMapaPage() {
@@ -62,7 +59,7 @@ class _PendientePageState extends State<PendientePage> {
     );
   }
 
-  Widget showPendientePage(snapshot){
+  Widget showPendientePage(snapshot) {
     if (snapshot.data.data['patrulla'] == null) {
       _searchPatrulla();
     }
@@ -88,7 +85,10 @@ class _PendientePageState extends State<PendientePage> {
           .snapshots(),
       builder:
           (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-        if (!snapshot.hasData || snapshot.data.data.isEmpty || !snapshot.data.exists || snapshot.data.data['estado'] == 'Terminado') {
+        if (!snapshot.hasData ||
+            snapshot.data.data.isEmpty ||
+            !snapshot.data.exists ||
+            snapshot.data.data['estado'] == 'Terminado') {
           return goHomePage();
         } else {
           if (snapshot.data.data["estado"] == "Creado") {
