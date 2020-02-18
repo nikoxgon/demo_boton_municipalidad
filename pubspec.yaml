@@ -51,6 +51,7 @@ dependencies:
   url_launcher: 
   fluttertoast: 
   convex_bottom_navigation:
+  flutter_rating_bar:
 
 
 dev_dependencies:
