@@ -19,7 +19,9 @@ class Appbar extends StatelessWidget with PreferredSizeWidget {
             Navigator.of(context).push(PageRouteBuilder(
                 fullscreenDialog: true,
                 opaque: false,
-                pageBuilder: (BuildContext context, _, __) => EncuestaPage()));
+                pageBuilder: (BuildContext context, _, __) => EncuestaPage(
+                  auth: auth
+                )));
           },
           child: Image.asset(
             'assets/images/logo_white.png',

@@ -113,13 +113,52 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
     return new Scaffold(
         resizeToAvoidBottomPadding: true,
         backgroundColor: Theme.of(context).primaryColor,
-        // appBar: new AppBar(
-        //   title: new Text('Flutter login'),
-        // ),
-        // backgroundColor: Color.fromRGBO(21, 19, 18, 1),
         body: Stack(
           children: <Widget>[
-            _showBody(),
+            Column(
+              children: <Widget>[
+                Container(
+                    height: MediaQuery.of(context).size.width / 1.3,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        _showLogo(),
+                        _showText(),
+                      ],
+                    )),
+                Expanded(
+                    child: Container(
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(40.0),
+                          topRight: Radius.circular(40.0))),
+                  child: _isLoading
+                      ? Center(
+                          child: SizedBox(
+                              height: 100.0,
+                              width: 100.0,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 8.0,
+                                valueColor: AlwaysStoppedAnimation(
+                                    Theme.of(context).primaryColor),
+                              )))
+                      : Form(
+                          key: _formKey,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: <Widget>[
+                              _showEmailInput(),
+                              _showPasswordInput(),
+                              _showErrorMessage(),
+                              _showPrimaryButton(),
+                              // _showSecondaryButton(),
+                            ],
+                          ),
+                        ),
+                )),
+              ],
+            ),
             // _showCircularProgress(),
           ],
         ));
@@ -151,53 +190,6 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
     );
   }
 
-  Widget _showBody() {
-    return new Column(
-      // shrinkWrap: true,
-      children: <Widget>[
-        Container(
-            height: 350,
-            child: Column(
-              children: <Widget>[
-                _showLogo(),
-                _showText(),
-              ],
-            )),
-        Expanded(
-            child: Container(
-          decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(40.0),
-                  topRight: Radius.circular(40.0))),
-          child: _isLoading
-              ? Center(
-                  child: SizedBox(
-                      height: 200.0,
-                      width: 200.0,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 8.0,
-                        valueColor: AlwaysStoppedAnimation(
-                            Theme.of(context).primaryColor),
-                      )))
-              : Form(
-                  key: _formKey,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      _showEmailInput(),
-                      _showPasswordInput(),
-                      _showErrorMessage(),
-                      _showPrimaryButton(),
-                      // _showSecondaryButton(),
-                    ],
-                  ),
-                ),
-        )),
-      ],
-    );
-  }
-
   Widget _showErrorMessage() {
     if (_errorMessage != null && _errorMessage.length > 0) {
       return new Text(
@@ -216,17 +208,16 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
   }
 
   Widget _showLogo() {
-    return new Padding(
-        padding: EdgeInsets.only(top: 90.0, bottom: 60.0),
-        child: new Image(
-          image: AssetImage('assets/images/logo_white.png'),
-          height: 80,
-        ));
+    return Container(
+      child: new Image(
+        image: AssetImage('assets/images/logo_white.png'),
+        height: 80,
+      ),
+    );
   }
 
   Widget _showText() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
+    return Container(
       child: new Text(
         'EMERGENCIA MUNICIPAL',
         textAlign: TextAlign.center,
