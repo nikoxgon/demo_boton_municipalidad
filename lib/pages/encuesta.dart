@@ -123,17 +123,34 @@ class _EncuestaPageState extends State<EncuestaPage> {
                           onPressed: (() {
                             widget.auth.getCurrentUser().then((onValue) {
                               Firestore.instance
-                                  .collection('encuestas')
-                                  .document(
-                                      snapshot.data.documents.first.documentID)
-                                  .collection('respuestas')
-                                  .add({
-                                'userId': onValue.email,
-                                'respuesta': 'no',
-                                'valor': null,
-                                'comentario': null
-                              }).then((val) {
-                                Navigator.pop(context);
+                                  .collection('users')
+                                  .document(onValue.email)
+                                  .snapshots()
+                                  .first
+                                  .then((val) {
+                                Firestore.instance
+                                    .collection('encuestas')
+                                    .document(snapshot
+                                        .data.documents.first.documentID)
+                                    .collection('respuestas')
+                                    .add({
+                                  'userId': onValue.email,
+                                  'userData': {
+                                    'rut': val.data['rut'],
+                                    'nombre': val.data['nombre'],
+                                    'telefono': val.data['telefono'],
+                                    'cuadrante': val.data['cuadrante'],
+                                    'residencia': val.data['relacion'],
+                                    'anos_comuna': val.data['anos_comuna'],
+                                    'sexo': val.data['sexo'],
+                                    'fec_nac': val.data['fecha_nac']
+                                  },
+                                  'respuesta': 'no',
+                                  'valor': null,
+                                  'comentario': null
+                                }).then((val) {
+                                  Navigator.pop(context);
+                                });
                               });
                             });
                           }),
@@ -162,7 +179,7 @@ class _EncuestaPageState extends State<EncuestaPage> {
                                     .snapshots()
                                     .first
                                     .then((val) {
-                                      print(val.data);
+                                  print(val.data);
                                   Firestore.instance
                                       .collection('encuestas')
                                       .document(snapshot
