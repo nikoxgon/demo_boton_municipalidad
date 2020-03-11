@@ -112,8 +112,10 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
     _isIos = Theme.of(context).platform == TargetPlatform.iOS;
     return new Scaffold(
         resizeToAvoidBottomPadding: true,
+        resizeToAvoidBottomInset: true,
         backgroundColor: Theme.of(context).primaryColor,
         body: Stack(
+          fit: StackFit.loose,
           children: <Widget>[
             Column(
               children: <Widget>[
@@ -127,6 +129,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
                       ],
                     )),
                 Expanded(
+                  flex: 1,
                     child: Container(
                   decoration: BoxDecoration(
                       color: Colors.white,

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>721144910754-upmppquud4mv2053qgmgql93kj9vdf3p.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.721144910754-upmppquud4mv2053qgmgql93kj9vdf3p</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>721144910754-qvb8v5lkvv1l1jv05o9dobmle4at9hv2.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyB7_rzQOyZjeLiujGvWYrkLsjNAu7AQ4SE</string>
+	<key>GCM_SENDER_ID</key>
+	<string>721144910754</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.bluapps.seam</string>
+	<key>PROJECT_ID</key>
+	<string>fir-btn-panico</string>
+	<key>STORAGE_BUCKET</key>
+	<string>fir-btn-panico.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:721144910754:ios:8fc6ad6a2d933e98fe18fb</string>
+	<key>DATABASE_URL</key>
+	<string>https://fir-btn-panico.firebaseio.com</string>
+</dict>
+</plist>
