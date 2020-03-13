@@ -25,36 +25,36 @@ dependencies:
   # cupertino_icons: ^0.1.3
 
   # DEPENDENCIA QUE PERMITE UTILIZAR EL CAMBIO DE RUTA 
-  provider: 
-  location: 
+  provider: 4.0.4
+  location: 2.5.4
 
   # DEPENDENCIAS DE GOOGLE MAPS -> VISUALIZACION Y ROUTING
-  google_maps_flutter: 
-  google_maps_webservice: 
+  google_maps_flutter: 0.5.24+1
+  google_maps_webservice: 0.0.16
 
-  # AUTENTIFICACION DE FIREBASE
-  firebase_auth: 
 
   # BASE DE DATOS FIRESTORE
-  cloud_firestore: 
+  cloud_firestore: 0.13.4+1
 
   # DEPENDENCIA DE ESTILO PARA FORMULARIO DE LOGIN
-  beauty_textfield: 
+  beauty_textfield: 0.0.1
 
   # VIBRADOR
-  vibration: 
+  vibration: 1.2.4
   # FONT AWESOME 
-  font_awesome_flutter: 
+  font_awesome_flutter: 8.7.0
   # GEOLOCALIZACION
-  geolocator: 
+  geolocator: 5.3.0
   # INVOCADOR DE APPS
-  url_launcher: 
-  fluttertoast: 
-  convex_bottom_navigation:
+  url_launcher: 5.4.2
+  fluttertoast: 3.1.3
+  convex_bottom_navigation: 1.1.0
   # ENCUESTA
-  flutter_rating_bar:
-  http:
-
+  flutter_rating_bar: 3.0.1+1
+  http: 0.12.0+4
+  firebase_auth: 0.15.3
+dependency_overrides:
+  firebase_core: 0.4.4
 dev_dependencies:
   flutter_test:
     sdk: flutter
