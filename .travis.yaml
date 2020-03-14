@@ -22,3 +22,4 @@ before_deploy:
   - cd .. 
   - zip -r app.ipa Payload 
   - popd
+  
